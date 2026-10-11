@@ -83,6 +83,11 @@ export const useActions = (
         m: actions.toggleMute,
         q: actions.setQueue,
         p: actions.togglePlay,
+        tab: () => {
+            if (currentTab === "Home") {
+                withTransition(() => actions.setSong());
+            }
+        },
         arrowup: () => {
             console.log("up");
             actions.setVolume(playerState.volume + 0.05)
@@ -96,7 +101,7 @@ export const useActions = (
         " ": actions.togglePlay,
         o: actions.setSettings,
         "!": actions.setConflicts,
-        escape: () => currentTab !== "Home" ? withTransition(() => setCurrentTab("Home")) : {},
+        escape: () => currentTab !== "Home" ? withTransition(() => actions.setHome()) : {},
     });
 
     return actions;

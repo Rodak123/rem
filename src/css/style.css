@@ -101,12 +101,35 @@ body {
 }
 
 ::view-transition-group(*) {
-    animation-duration: 350ms;
-    animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+    animation-duration: 250ms;
+    animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-duration: 150ms;
 }
 
 ::view-transition-old(player-vinyl),
 ::view-transition-new(player-vinyl) {
     height: 100%;
     width: 100%;
+}
+
+::view-transition-group(player-title),
+::view-transition-group(player-author) {
+    animation-duration: 200ms;
+}
+
+::view-transition-old(player-title),
+::view-transition-new(player-title) {
+    height: 100%;
+    object-fit: none;
+    object-position: left center;
+}
+
+.vt-active .vinyl-spin,
+.vt-active .vinyl-arm {
+    animation-play-state: paused !important;
+    transition: none !important;
 }
