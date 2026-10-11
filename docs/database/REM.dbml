@@ -1,0 +1,169 @@
+Table Song [headercolor: #387a17] {
+	hash integer [ pk, not null, note: 'Hash of the song' ]
+	title text [ not null ]
+	comment text
+	rating integer [ not null ]
+	isFavorite boolean [ not null, default: 0 ]
+	dateAdded datetime [ not null ]
+	filePath text [ not null ]
+	durationSeconds integer [ not null ]
+}
+
+Table SongPlayed [headercolor: #177a3d] {
+	dateTime datetime [ pk, not null ]
+	songHash integer [ not null ]
+}
+
+Table Playlist [headercolor: #7a1717] {
+	id integer [ pk, increment, not null ]
+	title text [ not null ]
+	comment text
+	artPath text [ not null ]
+	order integer [ not null, unique ]
+}
+
+Table SongInPlaylist [headercolor: #175e7a] {
+	playlistId integer [ pk, not null ]
+	order integer [ pk, not null ]
+	songHash integer [ not null ]
+}
+
+Table Creator [headercolor: #4e177a] {
+	id integer [ pk, increment, not null ]
+	name text [ not null ]
+	comment text
+}
+
+Table CreatorInSong [headercolor: #175e7a] {
+	creatorRoleName text [ pk, not null ]
+	creatorId integer [ pk, not null ]
+	songHash integer [ pk, not null ]
+}
+
+Table Album [headercolor: #23177a] {
+	id integer [ pk, increment, not null ]
+	title text [ not null ]
+	comment text
+	year integer [ not null ]
+	rating integer [ not null ]
+	artPath text [ not null ]
+}
+
+Table AlbumDisk [headercolor: #17177a] {
+	number integer [ pk, not null ]
+	albumId integer [ pk, not null ]
+}
+
+Table SongInAlbumDisk [headercolor: #175e7a] {
+	songHash integer [ not null ]
+	albumDiskNumber integer [ pk, not null ]
+	albumId integer [ pk, not null ]
+	order integer [ pk, not null ]
+}
+
+Table AlbumArtist [headercolor: #175e7a] {
+	albumId integer [ pk, not null ]
+	creatorId integer [ pk, not null ]
+}
+
+Table Genre [headercolor: #7a7017] {
+	name text [ pk, not null ]
+}
+
+Table SongGenre [headercolor: #175e7a] {
+	songHash integer [ pk, not null ]
+	genreName text [ pk, not null ]
+}
+
+Table Mood [headercolor: #7a6c17] {
+	name text [ pk, not null ]
+}
+
+Table SongMood [headercolor: #175e7a] {
+	songHash integer [ pk, not null ]
+	moodName text [ pk, not null ]
+}
+
+Table LyricsLine [headercolor: #7a7017] {
+	startTimeMillis integer [ pk, not null, note: 'When this lyrics line appears' ]
+	songHash integer [ pk, not null ]
+	locale text [ pk, not null, note: 'Language of lyrics' ]
+	lyrics text
+}
+
+Table Keyword [headercolor: #627a17] {
+	name text [ pk, not null ]
+}
+
+Table SongKeyword [headercolor: #175e7a] {
+	songHash integer [ pk, not null ]
+	keywordName text [ pk, not null ]
+}
+
+Ref fk_song_was_played {
+	SongPlayed.songHash > Song.hash [ delete: cascade, update: no action ]
+}
+
+Ref fk_playlist_contains_song {
+	SongInPlaylist.playlistId > Playlist.id [ delete: cascade, update: no action ]
+}
+
+Ref fk_song_belongs_to_playlist {
+	SongInPlaylist.songHash > Song.hash [ delete: cascade, update: no action ]
+}
+
+Ref fk_song_belongs_to_albumDisk {
+	SongInAlbumDisk.songHash > Song.hash [ delete: cascade, update: no action ]
+}
+
+Ref fk_albumDisk_contains_song {
+	SongInAlbumDisk.(albumId, albumDiskNumber) > AlbumDisk.(albumId, number) [ delete: cascade, update: no action ]
+}
+
+Ref fk_albumDisk_belogns_to_album {
+	AlbumDisk.albumId > Album.id [ delete: cascade, update: no action ]
+}
+
+Ref fk_album_has_artist {
+	AlbumArtist.albumId > Album.id [ delete: cascade, update: no action ]
+}
+
+Ref fk_artist_contributes_to_album {
+	AlbumArtist.creatorId > Creator.id [ delete: cascade, update: no action ]
+}
+
+Ref fk_genre_contains_song {
+	SongGenre.genreName > Genre.name [ delete: cascade, update: no action ]
+}
+
+Ref fk_song_belongs_to_genre {
+	SongGenre.songHash > Song.hash [ delete: cascade, update: no action ]
+}
+
+Ref fk_mood_contains_song {
+	SongMood.moodName > Mood.name [ delete: cascade, update: no action ]
+}
+
+Ref fk_song_belongs_to_mood {
+	SongMood.songHash > Song.hash [ delete: cascade, update: no action ]
+}
+
+Ref fk_song_has_lyricsLine {
+	LyricsLine.songHash > Song.hash [ delete: cascade, update: no action ]
+}
+
+Ref fk_creator_contributes_to_song {
+	CreatorInSong.creatorId > Creator.id [ delete: cascade, update: no action ]
+}
+
+Ref fk_song_has_creator {
+	CreatorInSong.songHash > Song.hash [ delete: cascade, update: no action ]
+}
+
+Ref fk_song_belongs_to_keyword {
+	SongKeyword.songHash > Song.hash [ delete: cascade, update: no action ]
+}
+
+Ref fk_keyword_contains_song {
+	SongKeyword.keywordName > Keyword.name [ delete: cascade, update: no action ]
+}
