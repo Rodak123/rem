@@ -39,6 +39,9 @@ export class PlayerState {
     public reset() {
         return this.clone({ progress: 0, playing: false });
     }
+    public syncAudio(volume: number, muted: boolean) {
+        return this.clone({ volume, muted });
+    }
 }
 
 export type PlayerActions = {
@@ -56,4 +59,6 @@ export type PlayerActions = {
     setPrevious: () => void;
     setConflicts: () => void;
     setSettings: () => void;
+    setSeek: (seconds: number) => void;
+    setVolume: (seconds: number) => void;
 };

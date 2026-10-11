@@ -1,0 +1,79 @@
+.progress-range {
+    --track-h: 4px;
+    --thumb-size: 12px;
+    --fill: var(--color-main);
+    --rest: color-mix(in srgb, var(--color-foreground), black 20%);
+
+    -webkit-appearance: none;
+    appearance: none;
+    height: 16px;
+    background: transparent;
+    cursor: pointer;
+}
+
+.progress-range:focus {
+    outline: none;
+}
+
+.progress-range::-webkit-slider-runnable-track {
+    height: var(--track-h);
+    border-radius: 999px;
+    background: linear-gradient(to right,
+            var(--fill) var(--progress), var(--rest) var(--progress));
+    transition: height 0.15s ease;
+}
+
+.progress-range::-moz-range-track {
+    height: var(--track-h);
+    border-radius: 999px;
+    background: linear-gradient(to right, var(--fill) var(--progress), var(--rest) var(--progress));
+    transition: height 0.15s ease;
+}
+
+.progress-range:hover {
+    --track-h: 6px;
+}
+
+.progress-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: var(--thumb-size);
+    height: var(--thumb-size);
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.4);
+    margin-top: calc((var(--track-h) - var(--thumb-size)) / 2);
+    transform: scale(0);
+    transition: transform 0.15s ease;
+}
+
+.progress-range::-moz-range-thumb {
+    width: calc(var(--thumb-size) - 4px);
+    height: calc(var(--thumb-size) - 4px);
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid var(--fill);
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.4);
+    transform: scale(0);
+    transition: transform 0.15s ease;
+}
+
+.progress-range:hover::-webkit-slider-thumb,
+.progress-range:focus-visible::-webkit-slider-thumb,
+.progress-range:active::-webkit-slider-thumb {
+    transform: scale(1);
+}
+
+.progress-range:hover::-moz-range-thumb,
+.progress-range:focus-visible::-moz-range-thumb,
+.progress-range:active::-moz-range-thumb {
+    transform: scale(1);
+}
+
+.progress-range:active::-webkit-slider-thumb {
+    transform: scale(1.15);
+}
+
+.progress-range:active::-moz-range-thumb {
+    transform: scale(1.15);
+}

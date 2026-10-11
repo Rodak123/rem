@@ -68,14 +68,15 @@ body {
 @import "tailwindcss";
 
 /*Special for playlist hover*/
-.hover-background{
+.hover-background {
     height: calc(100% + 30px);
     width: calc(100% + 20px);
     top: -10px;
     left: -10px;
     z-index: -1;
 }
-.album-item:hover .hover-background{
+
+.album-item:hover .hover-background {
     height: calc(100% + 30px);
     width: calc(100% + 20px);
     top: -10px;
@@ -97,4 +98,15 @@ body {
         height: calc(100% + 30px);
         width: calc(100% + 20px);
     }
+}
+
+::view-transition-group(*) {
+    animation-duration: 350ms;
+    animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+::view-transition-old(player-vinyl),
+::view-transition-new(player-vinyl) {
+    height: 100%;
+    width: 100%;
 }

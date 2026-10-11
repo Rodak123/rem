@@ -1,52 +1,68 @@
 import { Vinyl } from "./../AudioPlayer/Vinyl";
-import { MdVolumeDown, MdVolumeOff, MdVolumeUp } from "react-icons/md";
+import { MdOutlineSkipNext, MdOutlineSkipPrevious, } from "react-icons/md";
 import { IoPause, IoPlay } from "react-icons/io5";
 import { ProgressBar } from "./../AudioPlayer/Progressbar";
 import { useContext } from 'react';
-import { MiniPlayerProps} from "../../lib/playerTypes";
-import { CurrPlayingContext } from "../App";
+import { ContextPlayerProps } from "../../lib/contextType";
+import { CurrPlayingContext } from "../../lib/globalContext";
+import { MuteVolumeBtn } from "../AudioPlayer/MuteVolumeBtn";
 
-/*
-This component is for showing the currently played song in fullscreen. Miniplayer is for p*ssies, real men go here!
-Can be accessed using the render function from ./rem/src/lib/tabs.tsx
+/**
+    This component is for showing the currently played song in fullscreen.
+    Miniplayer is for p*ssies, real men go here! Can be accessed using
+    the render function from ./rem/src/lib/tabs.tsx
 */
-
 export const Song = () => {
-    const playerInfo = useContext<MiniPlayerProps>(CurrPlayingContext); //Loads all the data from App.tsx. When something changes there, this little guy will know.
-    const audioIcon = playerInfo.playerState.volume >= 0.5 ?
-        <MdVolumeUp size={30} /> :
-        playerInfo.playerState.muted || playerInfo.playerState.volume == 0.0 ?
-            <MdVolumeOff size={30} /> : <MdVolumeDown size={30} />
-        ;
+    //Loads all the data from App.tsx. When something changes there, this little guy will know.
+    const playerInfo = useContext<ContextPlayerProps>(CurrPlayingContext);
 
     return (
-        <div className="flex items-center justify-center flex-col">
-            <div className="flex items-center justify-center flex-col gap-3">
-                
-                    <Vinyl progress={playerInfo.progress} track={playerInfo.track} spinning={playerInfo.playing} className="h-1/10" />
-                    <span className="min-w-0">
-                        <span className="block truncate text-lg font-medium leading-tight">{playerInfo.track.title}</span>
-                        <span className="block truncate text-sm text-muted">{playerInfo.track.author}</span>
-                    </span>
-                <div className="flex items-center gap-3">
+        <div className="flex items-center justify-center flex-col w-full">
+            <div className="flex items-center justify-center flex-col
+            gap-6">
+                <div style={{ viewTransitionName: "player-vinyl" } as React.CSSProperties}>
+                    <Vinyl progress={playerInfo.playerState.progress}
+                        track={playerInfo.track}
+                        spinning={playerInfo.playerState.playing}
+                        className="max-[350px]:w-50 max-[450px]:w-60 max-[600px]:w-80 w-110" />
+                </div>
+                <span className="min-w-0">
+                    <span
+                        style={{ viewTransitionName: "player-title" } as React.CSSProperties}
+                        className="block truncate text-7xl
+                    font-medium leading-tight">{playerInfo.track.title}</span>
+                    <span
+                        style={{ viewTransitionName: "player-author" } as React.CSSProperties}
+                        className="block truncate text-xl text-muted">{playerInfo.track.author}</span>
+                </span>
+                <MuteVolumeBtn />
+                <div className="w-full"
+                    style={{ viewTransitionName: "progress-bar" } as React.CSSProperties}>
+                    <ProgressBar current={playerInfo.playerState.progress}
+                        duration={playerInfo.track.duration ?? 0}
+                        onSeek={playerInfo.actions.setSeek}
+                        className="stretch" />
+                </div>
+                <div className="flex items-center gap-4">
                     <button>
-                        {audioIcon}
+                        <MdOutlineSkipPrevious size={40} />
                     </button>
-
                     <button
-                        onClick={playerInfo.onTogglePlay}
-                        aria-label={playerInfo.playing ? "Pause (P)" : "Play (P)"}
-                        title={playerInfo.playing ? "Pause (P)" : "Play (P)"}
-                        className="grid size-11 shrink-0 cursor-pointer place-items-center rounded-full border border-foreground/40 transition-colors hover:bg-hover-bg"
+                        onClick={playerInfo.actions.togglePlay}
+                        aria-label={playerInfo.playerState.playing ? "Pause (P)" : "Play (P)"}
+                        title={playerInfo.playerState.playing ? "Pause (P)" : "Play (P)"}
+                        className="grid size-15 shrink-0 cursor-pointer place-items-center rounded-full
+                        border border-foreground/40 transition-colors hover:bg-hover-bg"
+                        style={{ viewTransitionName: "play-pause-btn" } as React.CSSProperties}
                     >
-                        {playerInfo.playing ? <IoPause size={20} /> : <IoPlay size={20} />}
+                        {playerInfo.playerState.playing ? <IoPause size={40} /> : <IoPlay size={40} />}
+                    </button>
+                    <button>
+                        <MdOutlineSkipNext size={40} />
                     </button>
                 </div>
             </div>
 
-            <div className="w-5/6">
-                <ProgressBar current={playerInfo.progress} duration={playerInfo.track.duration ?? 0} onSeek={playerInfo.onSeek} className="stretch" />
-            </div>
         </div>
     )
 };

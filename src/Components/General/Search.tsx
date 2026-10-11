@@ -100,7 +100,7 @@ export const Search = ({ searchInMiddle }: { searchInMiddle: boolean }) => {
                 but I want to go to eat my dinner :(
             */}
             <ul className={`fixed sm:h-106 overflow-y-auto
-                left-1/2 -translate-x-1/2
+                z-50 left-1/2 -translate-x-1/2
             ${!searchInMiddle ? "sm:left-0 sm:translate-x-0" : ""}
             sm:top-15 top-14 min-w-full
             sm:min-w-120 overflow-hidden sm:rounded-2xl
