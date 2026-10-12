@@ -2,14 +2,13 @@ import { IoPause, IoPlay } from "react-icons/io5";
 import { Vinyl } from "./Vinyl";
 import { useSwipe } from "../../hooks/useSwipe";
 import { ProgressBar } from "./Progressbar";
-import { ContextPlayerProps } from "../../lib/contextType";
-import { useContext } from "react";
-import { CurrPlayingContext } from "../../lib/globalContext";
 import { withTransition } from "../../lib/viewTransition";
 import { MuteVolumeBtn } from "./MuteVolumeBtn";
+import { usePlayerInfo } from '../../hooks/usePlayer';
 
 export const MiniPlayer = () => {
-    const miniPlayerInfo = useContext<ContextPlayerProps>(CurrPlayingContext);
+    const miniPlayerInfo = usePlayerInfo();
+
     const expand = () => withTransition(miniPlayerInfo.actions.setSong);
     // Swipe up (or tap) on the vinyl / title area pulls the full player up
     const swipe = useSwipe({ onUp: miniPlayerInfo.actions.setSong });

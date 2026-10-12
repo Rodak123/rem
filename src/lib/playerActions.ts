@@ -1,4 +1,4 @@
-import { Album } from './audioTypes';
+import { Album } from './types/audioTypes';
 
 export class PlayerState {
     public readonly playing: boolean = false;

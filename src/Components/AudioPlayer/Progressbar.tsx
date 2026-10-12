@@ -1,7 +1,7 @@
-import { CSSProperties, useContext } from "react";
+import { CSSProperties } from "react";
 import "../../css/progressBar.css";
-import { ContextPlayerProps } from "../../lib/contextType";
-import { CurrPlayingContext } from "../../lib/globalContext";
+import { TABS } from '../../lib/types/tabs';
+import { useTabs } from '../../hooks/useTabs';
 
 const format = (seconds: number) =>
     `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, "0")}`;
@@ -14,13 +14,15 @@ type ProgressBarProps = {
 };
 
 export const ProgressBar = ({ current, duration, onSeek, className = "" }: ProgressBarProps) => {
-    const playerInfo = useContext<ContextPlayerProps>(CurrPlayingContext);
+    const { currentTab } = useTabs();
+
+    const isSongTab = currentTab.type === TABS.SONG;
     const percent = duration > 0 ? (current / duration) * 100 : 0;
     return (
         <div className={`flex gap-2 text-[10px]
-            ${playerInfo.currentTab === "Song" ? "flex-col" : "items-center"}
+            ${isSongTab ? "flex-col" : "items-center"}
             tabular-nums text-muted ${className}`}>
-            <span className={playerInfo.currentTab === "Song" ? "hidden" : ""}>{format(current)}</span>
+            <span className={isSongTab ? "hidden" : ""}>{format(current)}</span>
             <input
                 type="range"
                 min={0}
@@ -33,7 +35,7 @@ export const ProgressBar = ({ current, duration, onSeek, className = "" }: Progr
                 className="progress-range flex-1 w-full min-h-2"
             />
             <div className="flex justify-between">
-                <span className={playerInfo.currentTab === "Song" ? "" : "hidden"}>{format(current)}</span>
+                <span className={isSongTab ? "" : "hidden"}>{format(current)}</span>
                 <span>{format(duration)}</span>
             </div>
         </div>

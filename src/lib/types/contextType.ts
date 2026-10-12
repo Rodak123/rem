@@ -1,6 +1,5 @@
 import { Track } from "./audioTypes";
-import { PlayerActions, PlayerState } from "./playerActions";
-import { Tab } from './tabs';
+import { PlayerActions, PlayerState } from "../playerActions";
 
 // Most likely we will have to separate it into multiple contexes
 // because some values are changed not many times and others, like
@@ -10,6 +9,5 @@ import { Tab } from './tabs';
 export type ContextPlayerProps = {
     playerState: PlayerState;
     track: Track;
-    currentTab: Tab;
     actions: PlayerActions;
 };

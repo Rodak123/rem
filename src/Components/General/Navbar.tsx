@@ -1,19 +1,22 @@
 import { IoMdSettings } from "react-icons/io";
 import { Search } from "./Search";
 import { RiSimCardWarningFill } from "react-icons/ri";
-import { JSX, useContext, useEffect, useState } from "react";
+import { JSX, useEffect, useState } from "react";
 import { MdKeyboardArrowLeft } from "react-icons/md";
-import { ContextPlayerProps } from "../../lib/contextType";
-import { CurrPlayingContext } from "../../lib/globalContext";
-import { TABS } from '../../lib/tabs';
+import { TABS } from '../../lib/types/tabs';
+import { useTabs } from '../../hooks/useTabs';
+import { AppLogo } from './AppLogo';
+import { usePlayerInfo } from '../../hooks/usePlayer';
 
 type NavbarProps = {
     hasConflicts?: boolean;
 };
 
 export const Navbar = ({ hasConflicts = false }: NavbarProps) => {
-    const playerInfo = useContext<ContextPlayerProps>(CurrPlayingContext);
-    const isHome = playerInfo.currentTab === TABS.HOME;
+    const { currentTab } = useTabs();
+
+    const playerInfo = usePlayerInfo();
+    const isHome = currentTab.type === TABS.HOME;
     const [leftBtn, setLeftBtn] = useState<JSX.Element | null>(null);
     useEffect(() => {
         if (!isHome)
@@ -39,14 +42,13 @@ export const Navbar = ({ hasConflicts = false }: NavbarProps) => {
                 </button>
             ));
         else
-            setLeftBtn(null);
-
-    }, [isHome]);
+            setLeftBtn((<AppLogo style={{ width: '30px' }} />));
+    }, [isHome, currentTab]);
 
     return (
         <div className="sticky z-5 top-0 flex items-center bg-background-dark py-3 justify-between px-5 mb-9">
             {leftBtn}
-            <Search searchInMiddle={hasConflicts || !isHome} />
+            <Search searchInMiddle={true} />
             <button onClick={playerInfo.actions.setSettings} aria-label="Settings" className="group cursor-pointer">
                 <IoMdSettings
                     size={30}

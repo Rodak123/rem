@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Track } from "../../lib/audioTypes";
+import { Track } from "../../lib/types/audioTypes";
 
 type VinylProps = { spinning: boolean; className?: string; track: Track, progress: number; };
 

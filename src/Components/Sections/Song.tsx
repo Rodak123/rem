@@ -2,10 +2,8 @@ import { Vinyl } from "./../AudioPlayer/Vinyl";
 import { MdOutlineSkipNext, MdOutlineSkipPrevious, } from "react-icons/md";
 import { IoPause, IoPlay } from "react-icons/io5";
 import { ProgressBar } from "./../AudioPlayer/Progressbar";
-import { useContext } from 'react';
-import { ContextPlayerProps } from "../../lib/contextType";
-import { CurrPlayingContext } from "../../lib/globalContext";
 import { MuteVolumeBtn } from "../AudioPlayer/MuteVolumeBtn";
+import { usePlayerInfo } from '../../hooks/usePlayer';
 
 /**
     This component is for showing the currently played song in fullscreen.
@@ -14,7 +12,7 @@ import { MuteVolumeBtn } from "../AudioPlayer/MuteVolumeBtn";
 */
 export const Song = () => {
     //Loads all the data from App.tsx. When something changes there, this little guy will know.
-    const playerInfo = useContext<ContextPlayerProps>(CurrPlayingContext);
+    const playerInfo = usePlayerInfo();
 
     return (
         <div className="flex items-center justify-center flex-col w-full">

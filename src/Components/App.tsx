@@ -1,15 +1,15 @@
 import { useState } from "react";
 import "../css/style.css";
 import { Navbar } from "./General/Navbar";
-import { Album, toTrack, Track } from "../lib/audioTypes";
+import { Album, toTrack, Track } from "../lib/types/audioTypes";
 import { MiniPlayer } from "./AudioPlayer/MiniPlayer";
 import { PlayerState } from "../lib/playerActions";
 import { miniPlayerBlacklist } from "../lib/miniPlayerBlacklist";
 import { RenderTabs } from "./RenderTabs";
-import { CurrPlayingContext } from "../lib/globalContext";
+import { CurrPlayingContext } from "../lib/contexts/globalContext";
 import { useActions } from "../hooks/useActions";
 import { useBackendListener } from "../hooks/useBackendListener";
-import { HomeTab, Tab, TABS } from '../lib/tabs';
+import { useTabs } from '../hooks/useTabs';
 
 const ALBUMS: Album[] = Array.from({ length: 9 }, (_, i) => ({
     id: String(i + 1),
@@ -19,10 +19,7 @@ const ALBUMS: Album[] = Array.from({ length: 9 }, (_, i) => ({
 }));
 
 function App() {
-    const homeTab: HomeTab = { type: TABS.HOME };
-
-    const [lastTab, setLastTab] = useState<Tab>(homeTab);
-    const [currentTab, setCurrentTab] = useState<Tab>(homeTab);
+    const { currentTab } = useTabs();
 
     /// I know it's wrong but this is just something for a demo
     //  Also I have no fucking idea, how the DB will look
@@ -38,10 +35,6 @@ function App() {
 
     const actions = useActions(
         setPlayerState,
-        setLastTab,
-        setCurrentTab,
-        currentTab,
-        lastTab,
         playerState
     );
 
@@ -51,7 +44,6 @@ function App() {
             // Other components can access this data.
             playerState: playerState,
             track: currentTrack,
-            currentTab: currentTab,
             actions: actions,
         }}>
 

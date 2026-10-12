@@ -3,8 +3,9 @@ import { PlayerActions, PlayerState } from "../lib/playerActions";
 import { Dispatch, SetStateAction } from "react";
 import { withTransition } from "../lib/viewTransition";
 import { useShortcuts } from "./useShortcuts";
-import { Tab, TABS } from '../lib/tabs';
-import { Album } from '../lib/audioTypes';
+import { useTabs } from './useTabs';
+import { Album } from '../lib/types/audioTypes';
+import { TABS } from '../lib/types/tabs';
 
 /**
  * Handles all input that happens during the runtime
@@ -12,12 +13,10 @@ import { Album } from '../lib/audioTypes';
  * */
 export const useActions = (
     setPlayerState: Dispatch<SetStateAction<PlayerState>>,
-    setLastTab: Dispatch<SetStateAction<Tab>>,
-    setCurrentTab: Dispatch<SetStateAction<Tab>>,
-    currentTab: Tab,
-    lastTab: Tab,
     playerState: PlayerState
 ) => {
+    const { changeTo, changeToPrevious } = useTabs();
+
     const actions: PlayerActions = {
         togglePlay: () => {
             invoke("toggle");
@@ -43,38 +42,39 @@ export const useActions = (
         pressShuffle: () => { /* This is going to be little longer
             cuz it requires also saving the state before shuffle*/ },
         setAlbumSection: (album: Album) => {
-            setLastTab(currentTab);
-            setCurrentTab({ type: TABS.ALBUM, album });
+            changeTo({ type: TABS.ALBUM, album });
         },
         setHome: () => {
-            setLastTab(currentTab);
-            setCurrentTab({ type: TABS.HOME });
+            changeTo({ type: TABS.HOME });
         },
         setLyrics: () => {
-            setLastTab(currentTab);
-            setCurrentTab({ type: TABS.LYRICS });
+            changeTo({ type: TABS.LYRICS });
         },
         setQueue: () => {
-            setLastTab(currentTab);
-            setCurrentTab({ type: TABS.QUEUE });
+            changeTo({ type: TABS.QUEUE });
         },
         setSong: () => {
-            setLastTab(currentTab);
-            setCurrentTab({ type: TABS.SONG });
+            changeTo({ type: TABS.SONG });
         },
         setPrevious: () => {
             /// Basically only to trigger the transition nothing insane
-            withTransition(() => setCurrentTab(lastTab));
-            setLastTab(currentTab);
+            withTransition(() => changeToPrevious());
         },
         setConflicts: () => {
-            setLastTab(currentTab);
-            setCurrentTab({ type: TABS.CONFLICTS });
+            changeTo({ type: TABS.CONFLICTS });
         },
         setSettings: () => {
-            setLastTab(currentTab);
-            setCurrentTab({ type: TABS.SETTINGS });
+            changeTo({ type: TABS.SETTINGS });
         },
+    };
+
+    const volumeUp = () => {
+        console.log("up");
+        actions.setVolume(playerState.volume + 0.05);
+    };
+
+    const volumeDown = () => {
+        actions.setVolume(playerState.volume - 0.05);
     };
 
     useShortcuts({
@@ -84,11 +84,8 @@ export const useActions = (
         m: actions.toggleMute,
         q: actions.setQueue,
         p: actions.togglePlay,
-        arrowup: () => {
-            console.log("up");
-            actions.setVolume(playerState.volume + 0.05);
-        },
-        arrowdown: () => actions.setVolume(playerState.volume - 0.05),
+        arrowup: volumeUp,
+        arrowdown: volumeDown,
         /* This won't work most likely, because OS takes the media
         *  play pause key and thinks it's for different app
         *  This will be handled probably in Rust backend
@@ -97,7 +94,7 @@ export const useActions = (
         " ": actions.togglePlay,
         o: actions.setSettings,
         "!": actions.setConflicts,
-        escape: () => currentTab.type !== TABS.HOME ? withTransition(() => actions.setHome()) : {},
+        escape: actions.setPrevious,
     });
 
     return actions;

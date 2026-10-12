@@ -1,8 +1,7 @@
 import { createContext } from "react";
-import { ContextPlayerProps } from "./contextType";
-import { Track } from "./audioTypes";
-import { PlayerActions, PlayerState } from "./playerActions";
-import { Tab } from './tabs';
+import { ContextPlayerProps } from "../types/contextType";
+import { Track } from "../types/audioTypes";
+import { PlayerActions, PlayerState } from "../playerActions";
 
 /**
     This stores important data about currently playing song. Every component using this context can access these data.
@@ -13,6 +12,5 @@ import { Tab } from './tabs';
 export const CurrPlayingContext = createContext<ContextPlayerProps>({
     track: null as unknown as Track,
     playerState: null as unknown as PlayerState,
-    currentTab: null as unknown as Tab,
     actions: null as unknown as PlayerActions,
 });

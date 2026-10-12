@@ -46,3 +46,11 @@ export interface ConflictsTab extends TabBase {
 }
 
 export type Tab = HomeTab | ALbumTab | SongTab | QueueTab | LyricsTab | SettingsTab | ConflictsTab;
+
+export interface TabContextProps {
+    currentTab: Tab;
+    previousTab: Tab | null;
+    tabHistory: Tab[];
+    changeTo: (targetTab: Tab) => void;
+    changeToPrevious: () => void;
+}
