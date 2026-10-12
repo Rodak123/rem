@@ -47,7 +47,7 @@ export const Navbar = ({ hasConflicts = false }: NavbarProps) => {
     return (
         <div className="sticky z-5 top-0 flex items-center bg-background-dark py-3 justify-between px-5 mb-9">
             {leftBtn}
-            <Search searchInMiddle={true} />
+            <Search />
             <button onClick={playerInfo.actions.setSettings} aria-label="Settings" className="group cursor-pointer">
                 <IoMdSettings
                     size={30}
