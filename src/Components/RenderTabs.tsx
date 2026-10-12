@@ -9,24 +9,27 @@ import { Album } from "../lib/audioTypes";
 import { useContext } from "react";
 import { ContextPlayerProps } from "../lib/contextType";
 import { CurrPlayingContext } from "../lib/globalContext";
+import { TABS } from '../lib/tabs';
 
-export type Tabs = "Home" | "Album" | "Song" | "Queue" | "Lyrics" | "Settings" | "Conflicts";
-export const RenderTabs = ({ albums }: { albums: Album[] }) => {
+export const RenderTabs = ({ albums }: { albums: Album[]; }) => {
     const playerInfo = useContext<ContextPlayerProps>(CurrPlayingContext);
-    switch (playerInfo.currentTab) {
-        case "Home":
+
+    const currentTab = playerInfo.currentTab;
+
+    switch (currentTab.type) {
+        case TABS.HOME:
             return <Home albums={albums} />;
-        case "Song":
+        case TABS.SONG:
             return <Song />;
-        case "Album":
-            return <AlbumSection />;
-        case "Queue":
+        case TABS.ALBUM:
+            return <AlbumSection album={currentTab.album} />;
+        case TABS.QUEUE:
             return <SongQueue />;
-        case "Lyrics":
+        case TABS.LYRICS:
             return <Lyrics />;
-        case "Conflicts":
+        case TABS.CONFLICTS:
             return <Conflicts />;
-        case "Settings":
+        case TABS.SETTINGS:
             return <Settings />;
     }
 };

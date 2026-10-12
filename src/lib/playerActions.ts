@@ -1,3 +1,5 @@
+import { Album } from './audioTypes';
+
 export class PlayerState {
     public readonly playing: boolean = false;
     public readonly repeat: boolean = false;
@@ -53,7 +55,7 @@ export type PlayerActions = {
 
     setHome: () => void;
     setSong: () => void;
-    setAlbumSection: () => void;
+    setAlbumSection: (album: Album) => void;
     setLyrics: () => void;
     setQueue: () => void;
     setPrevious: () => void;

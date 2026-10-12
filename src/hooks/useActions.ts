@@ -1,9 +1,10 @@
 import { invoke } from "@tauri-apps/api/core";
 import { PlayerActions, PlayerState } from "../lib/playerActions";
 import { Dispatch, SetStateAction } from "react";
-import { Tabs } from "../Components/RenderTabs";
 import { withTransition } from "../lib/viewTransition";
 import { useShortcuts } from "./useShortcuts";
+import { Tab, TABS } from '../lib/tabs';
+import { Album } from '../lib/audioTypes';
 
 /**
  * Handles all input that happens during the runtime
@@ -11,16 +12,16 @@ import { useShortcuts } from "./useShortcuts";
  * */
 export const useActions = (
     setPlayerState: Dispatch<SetStateAction<PlayerState>>,
-    setLastTab: Dispatch<SetStateAction<Tabs>>,
-    setCurrentTab: Dispatch<SetStateAction<Tabs>>,
-    currentTab: Tabs,
-    lastTab: Tabs,
+    setLastTab: Dispatch<SetStateAction<Tab>>,
+    setCurrentTab: Dispatch<SetStateAction<Tab>>,
+    currentTab: Tab,
+    lastTab: Tab,
     playerState: PlayerState
 ) => {
     const actions: PlayerActions = {
         togglePlay: () => {
             invoke("toggle");
-            setPlayerState(s => s.togglePlay())
+            setPlayerState(s => s.togglePlay());
         },
         toggleRepeat: () => setPlayerState(s => s.toggleRepeat()),
         toggleShuffle: () => setPlayerState(s => s.toggleShuffle()),
@@ -37,42 +38,42 @@ export const useActions = (
             const volume = Math.min(1, Math.max(0, num));
             invoke("set_volume", { volume })
                 .then(() => invoke("set_mute", { muted: false }))
-                .then(() => setPlayerState(s => s.setVolume(volume).unmute()))
+                .then(() => setPlayerState(s => s.setVolume(volume).unmute()));
         },
         pressShuffle: () => { /* This is going to be little longer
             cuz it requires also saving the state before shuffle*/ },
-        setAlbumSection: () => {
+        setAlbumSection: (album: Album) => {
             setLastTab(currentTab);
-            setCurrentTab("Album");
+            setCurrentTab({ type: TABS.ALBUM, album });
         },
         setHome: () => {
             setLastTab(currentTab);
-            setCurrentTab("Home");
+            setCurrentTab({ type: TABS.HOME });
         },
         setLyrics: () => {
             setLastTab(currentTab);
-            setCurrentTab("Lyrics");
+            setCurrentTab({ type: TABS.LYRICS });
         },
         setQueue: () => {
             setLastTab(currentTab);
-            setCurrentTab("Queue");
+            setCurrentTab({ type: TABS.QUEUE });
         },
         setSong: () => {
             setLastTab(currentTab);
-            setCurrentTab("Song");
+            setCurrentTab({ type: TABS.SONG });
         },
         setPrevious: () => {
             /// Basically only to trigger the transition nothing insane
-            withTransition(() => setCurrentTab(lastTab))
+            withTransition(() => setCurrentTab(lastTab));
             setLastTab(currentTab);
         },
         setConflicts: () => {
             setLastTab(currentTab);
-            setCurrentTab("Conflicts");
+            setCurrentTab({ type: TABS.CONFLICTS });
         },
         setSettings: () => {
             setLastTab(currentTab);
-            setCurrentTab("Settings");
+            setCurrentTab({ type: TABS.SETTINGS });
         },
     };
 
@@ -85,7 +86,7 @@ export const useActions = (
         p: actions.togglePlay,
         arrowup: () => {
             console.log("up");
-            actions.setVolume(playerState.volume + 0.05)
+            actions.setVolume(playerState.volume + 0.05);
         },
         arrowdown: () => actions.setVolume(playerState.volume - 0.05),
         /* This won't work most likely, because OS takes the media
@@ -96,8 +97,8 @@ export const useActions = (
         " ": actions.togglePlay,
         o: actions.setSettings,
         "!": actions.setConflicts,
-        escape: () => currentTab !== "Home" ? withTransition(() => setCurrentTab("Home")) : {},
+        escape: () => currentTab.type !== TABS.HOME ? withTransition(() => actions.setHome()) : {},
     });
 
     return actions;
-}
+};

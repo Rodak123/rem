@@ -64,5 +64,5 @@ export const Song = () => {
             </div>
 
         </div>
-    )
+    );
 };

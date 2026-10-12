@@ -5,6 +5,7 @@ import { JSX, useContext, useEffect, useState } from "react";
 import { MdKeyboardArrowLeft } from "react-icons/md";
 import { ContextPlayerProps } from "../../lib/contextType";
 import { CurrPlayingContext } from "../../lib/globalContext";
+import { TABS } from '../../lib/tabs';
 
 type NavbarProps = {
     hasConflicts?: boolean;
@@ -12,7 +13,7 @@ type NavbarProps = {
 
 export const Navbar = ({ hasConflicts = false }: NavbarProps) => {
     const playerInfo = useContext<ContextPlayerProps>(CurrPlayingContext);
-    const isHome = playerInfo.currentTab === "Home";
+    const isHome = playerInfo.currentTab === TABS.HOME;
     const [leftBtn, setLeftBtn] = useState<JSX.Element | null>(null);
     useEffect(() => {
         if (!isHome)
@@ -38,7 +39,7 @@ export const Navbar = ({ hasConflicts = false }: NavbarProps) => {
                 </button>
             ));
         else
-            setLeftBtn(null)
+            setLeftBtn(null);
 
     }, [isHome]);
 
