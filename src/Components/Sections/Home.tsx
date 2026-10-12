@@ -1,4 +1,4 @@
-import { usePlayerInfo } from '../../hooks/usePlayer';
+import { usePlayerInfo } from '../../hooks/usePlayerInfo';
 import { Album } from "../../lib/types/audioTypes";
 import { AlbumPreview } from '../General/AlbumPreview';
 

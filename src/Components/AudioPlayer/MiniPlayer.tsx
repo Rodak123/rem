@@ -4,7 +4,7 @@ import { useSwipe } from "../../hooks/useSwipe";
 import { ProgressBar } from "./Progressbar";
 import { withTransition } from "../../lib/viewTransition";
 import { MuteVolumeBtn } from "./MuteVolumeBtn";
-import { usePlayerInfo } from '../../hooks/usePlayer';
+import { usePlayerInfo } from '../../hooks/usePlayerInfo';
 
 export const MiniPlayer = () => {
     const miniPlayerInfo = usePlayerInfo();

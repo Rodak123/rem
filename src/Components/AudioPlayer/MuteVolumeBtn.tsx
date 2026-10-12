@@ -2,7 +2,7 @@ import { MdVolumeDown, MdVolumeOff, MdVolumeUp } from "react-icons/md";
 import { isMobile } from "../../lib/mobileCheck";
 import "../../css/volumeBar.css";
 import { useTabs } from '../../hooks/useTabs';
-import { usePlayerInfo } from '../../hooks/usePlayer';
+import { usePlayerInfo } from '../../hooks/usePlayerInfo';
 
 /**
 * This button is primarily meant for computers

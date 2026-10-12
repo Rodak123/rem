@@ -1,5 +1,8 @@
 import { Album } from './audioTypes';
 
+// Each tab holds its type and some of its own data,
+// which specifies what the tab will show
+
 export type TabType = "Home" | "Album" | "Song" | "Queue" | "Lyrics" | "Settings" | "Conflicts";
 
 interface TabBase {
@@ -10,9 +13,11 @@ export interface HomeTab extends TabBase {
     type: "Home";
 }
 
-export interface ALbumTab extends TabBase {
+export interface AlbumTab extends TabBase {
     type: "Album";
-    album: Album,
+    // This will change to albumId
+    // and the tab will fetch it from the backend
+    album: Album;
 }
 
 export interface SongTab extends TabBase {
@@ -35,7 +40,7 @@ export interface ConflictsTab extends TabBase {
     type: "Conflicts";
 }
 
-export type Tab = HomeTab | ALbumTab | SongTab | QueueTab | LyricsTab | SettingsTab | ConflictsTab;
+export type Tab = HomeTab | AlbumTab | SongTab | QueueTab | LyricsTab | SettingsTab | ConflictsTab;
 
 export interface TabContextProps {
     currentTab: Tab;

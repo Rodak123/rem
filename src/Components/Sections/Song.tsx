@@ -3,7 +3,7 @@ import { MdOutlineSkipNext, MdOutlineSkipPrevious, } from "react-icons/md";
 import { IoPause, IoPlay } from "react-icons/io5";
 import { ProgressBar } from "./../AudioPlayer/Progressbar";
 import { MuteVolumeBtn } from "../AudioPlayer/MuteVolumeBtn";
-import { usePlayerInfo } from '../../hooks/usePlayer';
+import { usePlayerInfo } from '../../hooks/usePlayerInfo';
 
 /**
     This component is for showing the currently played song in fullscreen.

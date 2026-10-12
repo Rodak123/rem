@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Tab, TABS } from '../types/tabs';
+import { Tab } from '../types/tabs';
 import { TabContext } from '../contexts/tabContext';
 
 interface TabContextProviderProps {
@@ -7,6 +7,7 @@ interface TabContextProviderProps {
     defaultTab?: Tab;
 }
 
+// Allows components to manage tabs
 export const TabContextProvider: React.FC<TabContextProviderProps> = ({ children, defaultTab }) => {
     const [tabHistory, setTabHistory] = useState<Tab[]>([]);
     const [currentTab, setCurrentTab] = useState<Tab>(defaultTab ?? { type: "Home" });

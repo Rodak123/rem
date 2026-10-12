@@ -5,7 +5,7 @@ import { JSX, useEffect, useState } from "react";
 import { MdKeyboardArrowLeft } from "react-icons/md";
 import { useTabs } from '../../hooks/useTabs';
 import { AppLogo } from './AppLogo';
-import { usePlayerInfo } from '../../hooks/usePlayer';
+import { usePlayerInfo } from '../../hooks/usePlayerInfo';
 
 type NavbarProps = {
     hasConflicts?: boolean;
