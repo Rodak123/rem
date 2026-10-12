@@ -3,7 +3,6 @@ import { Search } from "./Search";
 import { RiSimCardWarningFill } from "react-icons/ri";
 import { JSX, useEffect, useState } from "react";
 import { MdKeyboardArrowLeft } from "react-icons/md";
-import { TABS } from '../../lib/types/tabs';
 import { useTabs } from '../../hooks/useTabs';
 import { AppLogo } from './AppLogo';
 import { usePlayerInfo } from '../../hooks/usePlayer';

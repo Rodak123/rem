@@ -1,7 +1,6 @@
 import { MdVolumeDown, MdVolumeOff, MdVolumeUp } from "react-icons/md";
 import { isMobile } from "../../lib/mobileCheck";
 import "../../css/volumeBar.css";
-import { TABS } from '../../lib/types/tabs';
 import { useTabs } from '../../hooks/useTabs';
 import { usePlayerInfo } from '../../hooks/usePlayer';
 

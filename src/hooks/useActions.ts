@@ -5,7 +5,6 @@ import { withTransition } from "../lib/viewTransition";
 import { useShortcuts } from "./useShortcuts";
 import { useTabs } from './useTabs';
 import { Album } from '../lib/types/audioTypes';
-import { TABS } from '../lib/types/tabs';
 
 /**
  * Handles all input that happens during the runtime

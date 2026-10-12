@@ -6,7 +6,6 @@ import { Settings } from "./Sections/Settings";
 import { Song } from "./Sections/Song";
 import { SongQueue } from "./Sections/SongQueue";
 import { Album } from "../lib/types/audioTypes";
-import { TABS } from '../lib/types/tabs';
 import { useTabs } from '../hooks/useTabs';
 
 export const RenderTabs = ({ albums }: { albums: Album[]; }) => {

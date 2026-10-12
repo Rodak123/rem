@@ -1,6 +1,5 @@
 import { CSSProperties } from "react";
 import "../../css/progressBar.css";
-import { TABS } from '../../lib/types/tabs';
 import { useTabs } from '../../hooks/useTabs';
 
 const format = (seconds: number) =>
