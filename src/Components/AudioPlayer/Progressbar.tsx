@@ -16,7 +16,7 @@ type ProgressBarProps = {
 export const ProgressBar = ({ current, duration, onSeek, className = "" }: ProgressBarProps) => {
     const { currentTab } = useTabs();
 
-    const isSongTab = currentTab.type === TABS.SONG;
+    const isSongTab = currentTab.type === "Song";
     const percent = duration > 0 ? (current / duration) * 100 : 0;
     return (
         <div className={`flex gap-2 text-[10px]

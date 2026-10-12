@@ -13,19 +13,19 @@ export const RenderTabs = ({ albums }: { albums: Album[]; }) => {
     const { currentTab } = useTabs();
 
     switch (currentTab.type) {
-        case TABS.HOME:
+        case "Home":
             return <Home albums={albums} />;
-        case TABS.SONG:
+        case "Song":
             return <Song />;
-        case TABS.ALBUM:
+        case "Album":
             return <AlbumSection album={currentTab.album} />;
-        case TABS.QUEUE:
+        case "Song":
             return <SongQueue />;
-        case TABS.LYRICS:
+        case "Lyrics":
             return <Lyrics />;
-        case TABS.CONFLICTS:
+        case "Conflicts":
             return <Conflicts />;
-        case TABS.SETTINGS:
+        case "Settings":
             return <Settings />;
     }
 };

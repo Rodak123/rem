@@ -42,29 +42,29 @@ export const useActions = (
         pressShuffle: () => { /* This is going to be little longer
             cuz it requires also saving the state before shuffle*/ },
         setAlbumSection: (album: Album) => {
-            changeTo({ type: TABS.ALBUM, album });
+            changeTo({ type: "Album", album });
         },
         setHome: () => {
-            changeTo({ type: TABS.HOME });
+            changeTo({ type: "Home" });
         },
         setLyrics: () => {
-            changeTo({ type: TABS.LYRICS });
+            changeTo({ type: "Lyrics" });
         },
         setQueue: () => {
-            changeTo({ type: TABS.QUEUE });
+            changeTo({ type: "Song" });
         },
         setSong: () => {
-            changeTo({ type: TABS.SONG });
+            changeTo({ type: "Song" });
         },
         setPrevious: () => {
             /// Basically only to trigger the transition nothing insane
             withTransition(() => changeToPrevious());
         },
         setConflicts: () => {
-            changeTo({ type: TABS.CONFLICTS });
+            changeTo({ type: "Conflicts" });
         },
         setSettings: () => {
-            changeTo({ type: TABS.SETTINGS });
+            changeTo({ type: "Settings" });
         },
     };
 

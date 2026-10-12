@@ -1,48 +1,38 @@
 import { Album } from './audioTypes';
 
-export const TABS = {
-    HOME: "Home",
-    ALBUM: "Album",
-    SONG: "Song",
-    QUEUE: "Queue",
-    LYRICS: "Lyrics",
-    SETTINGS: "Settings",
-    CONFLICTS: "Conflicts",
-} as const;
-
-export type TabType = typeof TABS[keyof typeof TABS];
+export type TabType = "Home" | "Album" | "Song" | "Queue" | "Lyrics" | "Settings" | "Conflicts";
 
 interface TabBase {
     type: TabType;
 }
 
 export interface HomeTab extends TabBase {
-    type: typeof TABS["HOME"];
+    type: "Home";
 }
 
 export interface ALbumTab extends TabBase {
-    type: typeof TABS["ALBUM"];
+    type: "Album";
     album: Album,
 }
 
 export interface SongTab extends TabBase {
-    type: typeof TABS["SONG"];
+    type: "Song";
 }
 
 export interface QueueTab extends TabBase {
-    type: typeof TABS["QUEUE"];
+    type: "Queue";
 }
 
 export interface LyricsTab extends TabBase {
-    type: typeof TABS["LYRICS"];
+    type: "Lyrics";
 }
 
 export interface SettingsTab extends TabBase {
-    type: typeof TABS["SETTINGS"];
+    type: "Settings";
 }
 
 export interface ConflictsTab extends TabBase {
-    type: typeof TABS["CONFLICTS"];
+    type: "Conflicts";
 }
 
 export type Tab = HomeTab | ALbumTab | SongTab | QueueTab | LyricsTab | SettingsTab | ConflictsTab;

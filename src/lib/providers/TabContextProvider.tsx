@@ -9,7 +9,7 @@ interface TabContextProviderProps {
 
 export const TabContextProvider: React.FC<TabContextProviderProps> = ({ children, defaultTab }) => {
     const [tabHistory, setTabHistory] = useState<Tab[]>([]);
-    const [currentTab, setCurrentTab] = useState<Tab>(defaultTab ?? { type: TABS.HOME });
+    const [currentTab, setCurrentTab] = useState<Tab>(defaultTab ?? { type: "Home" });
 
     const changeTo = (targetTab: Tab) => {
         setTabHistory([...tabHistory, currentTab]);
@@ -20,7 +20,7 @@ export const TabContextProvider: React.FC<TabContextProviderProps> = ({ children
         const newTabHistory = [...tabHistory];
         const previousTab = newTabHistory.pop();
         setTabHistory(newTabHistory);
-        setCurrentTab(previousTab ?? { type: TABS.HOME });
+        setCurrentTab(previousTab ?? { type: "Home" });
     };
 
     return (

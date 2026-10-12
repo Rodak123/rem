@@ -16,7 +16,7 @@ export const Navbar = ({ hasConflicts = false }: NavbarProps) => {
     const { currentTab } = useTabs();
 
     const playerInfo = usePlayerInfo();
-    const isHome = currentTab.type === TABS.HOME;
+    const isHome = currentTab.type === "Home";
     const [leftBtn, setLeftBtn] = useState<JSX.Element | null>(null);
     useEffect(() => {
         if (!isHome)

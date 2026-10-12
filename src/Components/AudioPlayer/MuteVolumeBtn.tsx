@@ -16,7 +16,7 @@ export const MuteVolumeBtn = () => {
 
     if (isMobile()) return null;
 
-    const horizontal = currentTab.type === TABS.SONG;
+    const horizontal = currentTab.type === "Song";
     const shown = playerState.muted ? 0 : playerState.volume;
     const percent = Math.round(shown * 100);
     const Icon = shown === 0 ? MdVolumeOff : shown < 0.5 ? MdVolumeDown : MdVolumeUp;
