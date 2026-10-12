@@ -68,7 +68,6 @@ export const useActions = (
     };
 
     const volumeUp = () => {
-        console.log("up");
         actions.setVolume(playerState.volume + 0.05);
     };
 
