@@ -2,7 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { AudioOptions, AudioRealTimeInfo } from "../lib/backendEvents";
-import { Track } from "../lib/audioTypes";
+import { Track } from "../lib/types/audioTypes";
 import { PlayerState } from "../lib/playerActions";
 
 /**
