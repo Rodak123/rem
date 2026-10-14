@@ -15,14 +15,11 @@ export const TabContextProvider: React.FC<TabContextProviderProps> = ({ children
     const [currentTab, setCurrentTab] = useState<Tab>(defaultTab ?? { type: "Home" });
 
     const changeTo = (targetTab: Tab) => {
-        // There is no check here for reopening the same tab,
-        // so make sure that UI never allows it.
-
-        // If we want that, here's a simple solution:
-        // if (JSON.stringify(currentTab) === JSON.stringify(targetTab)) return;
-
-        setTabHistory([...tabHistory, currentTab]);
-        setCurrentTab(targetTab);
+        // You cannot change to the exact tab you currently are.
+        if (currentTab !== targetTab) {
+            setTabHistory([...tabHistory, currentTab]);
+            setCurrentTab(targetTab);
+        }
     };
 
     const changeToPrevious = () => {

@@ -56,8 +56,17 @@ export const useActions = (
             changeTo({ type: "Song" });
         },
         setPrevious: () => {
-            /// Basically only to trigger the transition nothing insane
-            withTransition(() => changeToPrevious());
+            // Trigger transition only when you are
+            // going from songs. This thing with
+            // transition starts to get tricky, maybe
+            // we will remove it because it sometimes
+            // bugs the UI.
+            if (currentTab.type === "Song") {
+                withTransition(() => changeToPrevious());
+            }
+            else {
+                changeToPrevious();
+            }
         },
         setConflicts: () => {
             changeTo({ type: "Conflicts" });
@@ -76,7 +85,10 @@ export const useActions = (
     };
 
     const changeTab = () => {
-        if (currentTab.type === "Home") {
+        // setSong does have prevention from
+        // setting the same tab, but not the
+        // tab key
+        if (currentTab.type !== "Song") {
             withTransition(() => actions.setSong());
         }
     };
