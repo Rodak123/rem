@@ -14,7 +14,7 @@ export const useActions = (
     setPlayerState: Dispatch<SetStateAction<PlayerState>>,
     playerState: PlayerState
 ) => {
-    const { changeTo, changeToPrevious } = useTabs();
+    const { currentTab, changeTo, changeToPrevious } = useTabs();
 
     const actions: PlayerActions = {
         togglePlay: () => {
@@ -75,6 +75,12 @@ export const useActions = (
         actions.setVolume(playerState.volume - 0.05);
     };
 
+    const changeTab = () => {
+        if (currentTab.type === "Home") {
+            withTransition(() => actions.setSong());
+        }
+    };
+
     useShortcuts({
         r: actions.toggleRepeat,
         s: actions.toggleShuffle,
@@ -82,6 +88,7 @@ export const useActions = (
         m: actions.toggleMute,
         q: actions.setQueue,
         p: actions.togglePlay,
+        tab: changeTab,
         arrowup: volumeUp,
         arrowdown: volumeDown,
         /* This won't work most likely, because OS takes the media

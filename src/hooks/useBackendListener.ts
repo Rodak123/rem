@@ -1,8 +1,8 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { Dispatch, SetStateAction, useEffect } from "react";
-import { AudioRealtime } from "../lib/backendEvents";
-import { Track } from "../lib/types/audioTypes";
+import { AudioOptions, AudioRealTimeInfo } from "../lib/backendEvents";
+import { Track } from "../lib/audioTypes";
 import { PlayerState } from "../lib/playerActions";
 
 /**
@@ -14,37 +14,32 @@ export const useBackendListener = (
     setCurrentTrack: Dispatch<SetStateAction<Track>>,
     setPlayerState: Dispatch<SetStateAction<PlayerState>>
 ) => {
-    // This will be most likely removed,
-    // but it really depends how we handle the queue
     useEffect(() => {
         invoke("load_track", { path: currentTrack.path });
-    }, []);
-    useEffect(() => {
-        let didSynced = false;
+        // Most likely backend will read some settings from
+        // last session, where the App will store things like
+        // is muted, volume and so on
+        const setOptions = async () => {
+            const opts: AudioOptions =
+                await invoke("get_options");
+            setPlayerState(s =>
+                s.syncAudio(opts.volume, opts.muted));
+        };
+        setOptions();
         let previousPos = 0;
-        const progress = listen<AudioRealtime>("audio-realtime", (e) => {
-            const { progress, info } = e.payload;
-            // Most likely backend will read some settings from
-            // last session, where the App will store things like
-            // is muted, volume and so on
-            if (!didSynced) {
-                setPlayerState(s =>
-                    s.setProgress(progress.position_ms / 1000)
-                        .syncAudio(info.volume, info.muted)
-                );
-                didSynced = true;
-            }
-            else if (progress.finished)
+        const progress = listen<AudioRealTimeInfo>("audio-realtime", (e) => {
+            const { position, finished } = e.payload;
+            if (finished)
                 setPlayerState(s => s.setProgress(0).pause());
-            else if (progress.position_ms !== previousPos) {
-                previousPos = progress.position_ms;
-                setPlayerState(s => s.setProgress(progress.position_ms / 1000));
+            else if (position !== previousPos) {
+                previousPos = position;
+                setPlayerState(s => s.setProgress(position));
             }
         });
-        const loaded = listen<{ duration_ms: number | null; }>("track-loaded", (e) => {
-            const ms = e.payload.duration_ms;
-            if (ms == null) return;
-            setCurrentTrack(t => ({ ...t, duration: ms / 1000 }));
+        const loaded = listen<{ duration: number | null; }>("track-loaded", (e) => {
+            const duration = e.payload.duration;
+            if (duration == null) return;
+            setCurrentTrack(t => ({ ...t, duration: duration }));
         });
 
         return () => {
