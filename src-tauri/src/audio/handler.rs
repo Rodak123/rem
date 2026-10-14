@@ -1,63 +1,13 @@
-use lofty::file::AudioFile;
-use lofty::probe::Probe;
-use tauri::{AppHandle, Emitter};
-
-use crate::audio::commands::AudioCommand;
-use std::sync::mpsc;
+use anyhow::Result;
+use std::sync::{Arc, Mutex, mpsc};
 use std::time::Duration;
 use std::{fs::File, thread};
+use tauri::AppHandle;
 
-#[derive(Clone, serde::Serialize)]
-pub struct Progress {
-    pub position_ms: u64,
-    pub finished: bool,
-}
-impl Progress {
-    pub fn new() -> Self {
-        Self {
-            finished: false,
-            position_ms: 0,
-        }
-    }
-}
-
-#[derive(Clone, serde::Serialize)]
-pub struct AudioInfo {
-    pub volume: f32,
-    pub muted: bool,
-}
-impl AudioInfo {
-    pub fn new() -> Self {
-        Self {
-            muted: false,
-            volume: 1.0,
-        }
-    }
-}
-
-#[derive(Clone, serde::Serialize)]
-pub struct RealTimeAudioInfo {
-    pub progress: Progress,
-    pub info: AudioInfo,
-}
-impl RealTimeAudioInfo {
-    pub fn new() -> Self {
-        Self {
-            progress: Progress::new(),
-            info: AudioInfo::new(),
-        }
-    }
-}
-
-#[derive(Clone, serde::Serialize)]
-pub struct TrackLoadedAudioInfo {
-    pub duration_ms: u64,
-}
-impl TrackLoadedAudioInfo {
-    pub fn new() -> Self {
-        Self { duration_ms: 0 }
-    }
-}
+use crate::audio::request::AudioRequest;
+use crate::structs::audio::options::AudioOptions;
+use crate::structs::audio::realtime::AudioRealTimeInfo;
+use crate::structs::audio::track::Track;
 
 /// How does the handler works:
 /// "C'mon, do something...":
@@ -78,19 +28,23 @@ impl TrackLoadedAudioInfo {
 ///         Data about song that is going to be played.
 ///         Name of the event is "track-loaded"
 pub struct AudioHandler {
-    tx: mpsc::Sender<AudioCommand>,
-    pub real_time: RealTimeAudioInfo,
-    pub track_loaded: TrackLoadedAudioInfo,
+    tx: Arc<mpsc::Sender<AudioRequest>>,
+    /// This is std::sync::Mutex! Meaning you must
+    /// lock it and than check if it's Ok or Err.
+    pub realtime_info: Arc<Mutex<AudioRealTimeInfo>>,
+    pub opts: Arc<Mutex<AudioOptions>>,
 }
 impl AudioHandler {
-    pub fn new(app: AppHandle) -> Self {
-        let (tx, rx) = mpsc::channel::<AudioCommand>();
-        let mut handler = Self {
-            tx,
-            real_time: RealTimeAudioInfo::new(),
-            track_loaded: TrackLoadedAudioInfo::new(),
+    pub fn new(app: AppHandle) -> tauri::Result<Self> {
+        let (tx, rx) = mpsc::channel::<AudioRequest>();
+        let handler = Self {
+            tx: Arc::new(tx),
+            realtime_info: Arc::new(Mutex::new(AudioRealTimeInfo::new())),
+            opts: Arc::new(Mutex::new(AudioOptions::new())),
         };
 
+        let state = Arc::clone(&handler.realtime_info);
+        let opts = Arc::clone(&handler.opts);
         // I guess we could use Tokio task for this, but at the same time
         // this process have tendencies to use reading files and some
         // other blocking operations (If I'm not mistake, the audio
@@ -100,98 +54,76 @@ impl AudioHandler {
         thread::Builder::new()
             .name("audio-handler".into())
             .spawn(move || {
-                let device = match rodio::DeviceSinkBuilder::open_default_sink() {
-                    Ok(d) => d,
-                    Err(e) => {
-                        eprintln!("audio: no output device: {e}");
-                        return;
-                    }
-                };
-
+                let device = rodio::DeviceSinkBuilder::open_default_sink()?;
                 let mut player = rodio::Player::connect_new(device.mixer());
-
                 loop {
                     match rx.recv_timeout(Duration::from_millis(250)) {
                         Ok(cmd) => match cmd {
-                            AudioCommand::Load(path) => {
+                            AudioRequest::Load(path) => {
                                 player = rodio::Player::connect_new(device.mixer());
-                                player.set_volume(handler.real_time.info.volume);
+                                if let Ok(opts) = opts.lock() {
+                                    player.set_volume(opts.volume);
+                                }
                                 player.pause();
 
                                 match File::open(&path).map_err(|e| e.to_string()).and_then(|f| {
                                     rodio::Decoder::try_from(f).map_err(|e| e.to_string())
                                 }) {
                                     Ok(source) => {
-                                        let tagged_file = Probe::open(path)
-                                            .expect("ERROR: Bad path provided!")
-                                            .read()
-                                            .expect("ERROR: Failed to read file!");
-                                        let duration = tagged_file.properties().duration();
                                         player.append(source);
-                                        let _ = app.emit(
-                                            "track-loaded",
-                                            TrackLoadedAudioInfo {
-                                                duration_ms: duration.as_millis() as u64,
-                                            },
-                                        );
+                                        // This can crash just because put wrong path
+                                        // App can work still
+                                        // TODO: Add extra event that emits error messages
+                                        let _ = Track::send_track_data(path, &app);
                                     }
                                     Err(e) => eprintln!("audio: load failed: {e}"),
                                 }
                             }
-                            AudioCommand::Toggle => {
+                            AudioRequest::Toggle => {
                                 if player.is_paused() {
                                     player.play();
                                 } else {
                                     player.pause();
                                 }
                             }
-                            AudioCommand::Seek(dur) => {
-                                player.try_seek(dur).expect("Couldn't seek the position");
+                            AudioRequest::Seek(dur) => {
+                                // Nothing major just wrong position,
+                                // still can work afterwards
+                                let _ = player.try_seek(dur);
                             }
-                            AudioCommand::SetVolume(v) => {
-                                handler.real_time.info.volume = v;
-                                handler.real_time.info.muted = false;
-                                player.set_volume(handler.real_time.info.volume);
+                            AudioRequest::SetVolume(v) => {
+                                if let Ok(mut opts) = opts.lock() {
+                                    opts.volume = v;
+                                    opts.muted = false;
+                                }
+                                player.set_volume(v);
                             }
-                            AudioCommand::Mute => {
-                                handler.real_time.info.muted = !handler.real_time.info.muted;
-                                player.set_volume(if handler.real_time.info.muted {
-                                    0.0
-                                } else {
-                                    handler.real_time.info.volume
-                                });
+                            AudioRequest::Mute => {
+                                if let Ok(mut opts) = opts.lock() {
+                                    opts.muted = !opts.muted;
+                                    player.set_volume(if opts.muted { 0.0 } else { opts.volume });
+                                }
                             }
                         },
                         Err(mpsc::RecvTimeoutError::Timeout) => {}
                         Err(mpsc::RecvTimeoutError::Disconnected) => break,
                     }
-
-                    let _ = app.emit(
-                        "audio-realtime",
-                        RealTimeAudioInfo {
-                            progress: Progress {
-                                position_ms: if player.empty() {
-                                    0
-                                } else {
-                                    player.get_pos().as_millis() as u64
-                                },
-                                finished: player.empty(),
-                            },
-                            info: AudioInfo {
-                                volume: handler.real_time.info.volume,
-                                muted: handler.real_time.info.muted,
-                            },
-                        },
-                    );
+                    if let Ok(mut state) = state.lock() {
+                        state.position = if player.empty() {
+                            0
+                        } else {
+                            player.get_pos().as_secs()
+                        };
+                        state.finished = player.empty();
+                        state.send_realtime_data(&app)?;
+                    }
                 }
-            })
-            .expect("Audio handler failed");
-        handler
+                Ok::<(), anyhow::Error>(())
+            })?;
+        Ok(handler)
     }
 
-    pub fn send(&self, cmd: AudioCommand) {
-        self.tx
-            .send(cmd)
-            .expect("Failed to send cmd into audio handler");
+    pub fn send(&self, cmd: AudioRequest) -> Result<()> {
+        Ok(self.tx.send(cmd)?)
     }
 }
