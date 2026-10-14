@@ -7,12 +7,20 @@ interface TabContextProviderProps {
     defaultTab?: Tab;
 }
 
-// Allows components to manage tabs
+/**
+ * Stores tab state and history, and exposes methods to manage manipulate with that state.
+ */
 export const TabContextProvider: React.FC<TabContextProviderProps> = ({ children, defaultTab }) => {
     const [tabHistory, setTabHistory] = useState<Tab[]>([]);
     const [currentTab, setCurrentTab] = useState<Tab>(defaultTab ?? { type: "Home" });
 
     const changeTo = (targetTab: Tab) => {
+        // There is no check here for reopening the same tab,
+        // so make sure that UI never allows it.
+
+        // If we want that, here's a simple solution:
+        // if (JSON.stringify(currentTab) === JSON.stringify(targetTab)) return;
+
         setTabHistory([...tabHistory, currentTab]);
         setCurrentTab(targetTab);
     };
