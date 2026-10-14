@@ -2,7 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { AudioOptions, AudioRealTimeInfo } from "../lib/backendEvents";
-import { Track } from "../lib/audioTypes";
+import { Track } from "../lib/types/audioTypes";
 import { PlayerState } from "../lib/playerActions";
 
 /**
@@ -24,7 +24,7 @@ export const useBackendListener = (
                 await invoke("get_options");
             setPlayerState(s =>
                 s.syncAudio(opts.volume, opts.muted));
-        }
+        };
         setOptions();
         let previousPos = 0;
         const progress = listen<AudioRealTimeInfo>("audio-realtime", (e) => {
@@ -36,7 +36,7 @@ export const useBackendListener = (
                 setPlayerState(s => s.setProgress(position));
             }
         });
-        const loaded = listen<{ duration: number | null }>("track-loaded", (e) => {
+        const loaded = listen<{ duration: number | null; }>("track-loaded", (e) => {
             const duration = e.payload.duration;
             if (duration == null) return;
             setCurrentTrack(t => ({ ...t, duration: duration }));

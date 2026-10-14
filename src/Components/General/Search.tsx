@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 
-export const Search = ({ searchInMiddle }: { searchInMiddle: boolean }) => {
+export const Search = ({ searchInMiddle = true }: { searchInMiddle?: boolean; }) => {
     const results = [
         {
             text: "For example name of Album or Song",

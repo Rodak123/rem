@@ -1,14 +1,15 @@
 import { useState } from "react";
 import "../css/style.css";
 import { Navbar } from "./General/Navbar";
-import { Album, toTrack, Track } from "../lib/audioTypes";
+import { Album, toTrack, Track } from "../lib/types/audioTypes";
 import { MiniPlayer } from "./AudioPlayer/MiniPlayer";
 import { PlayerState } from "../lib/playerActions";
 import { miniPlayerBlacklist } from "../lib/miniPlayerBlacklist";
-import { RenderTabs, Tabs } from "./RenderTabs";
-import { CurrPlayingContext } from "../lib/globalContext";
+import { RenderTabs } from "./RenderTabs";
+import { CurrPlayingContext } from "../lib/contexts/globalContext";
 import { useActions } from "../hooks/useActions";
 import { useBackendListener } from "../hooks/useBackendListener";
+import { useTabs } from '../hooks/useTabs';
 
 const ALBUMS: Album[] = Array.from({ length: 9 }, (_, i) => ({
     id: String(i + 1),
@@ -18,8 +19,7 @@ const ALBUMS: Album[] = Array.from({ length: 9 }, (_, i) => ({
 }));
 
 function App() {
-    const [lastTab, setLastTab] = useState<Tabs>("Home");
-    const [currentTab, setCurrentTab] = useState<Tabs>("Home");
+    const { currentTab } = useTabs();
 
     /// I know it's wrong but this is just something for a demo
     //  Also I have no fucking idea, how the DB will look
@@ -31,14 +31,10 @@ function App() {
         currentTrack,
         setCurrentTrack,
         setPlayerState
-    )
+    );
 
     const actions = useActions(
         setPlayerState,
-        setLastTab,
-        setCurrentTab,
-        currentTab,
-        lastTab,
         playerState
     );
 
@@ -48,7 +44,6 @@ function App() {
             // Other components can access this data.
             playerState: playerState,
             track: currentTrack,
-            currentTab: currentTab,
             actions: actions,
         }}>
 
@@ -57,7 +52,7 @@ function App() {
                 <RenderTabs
                     albums={ALBUMS}
                 />
-                {miniPlayerBlacklist.includes(currentTab) ? <></> : <MiniPlayer />}
+                {miniPlayerBlacklist.includes(currentTab.type) ? <></> : <MiniPlayer />}
             </main>
         </CurrPlayingContext.Provider>
     );

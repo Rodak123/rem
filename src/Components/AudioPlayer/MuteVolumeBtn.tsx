@@ -1,9 +1,8 @@
-import { useContext } from "react";
 import { MdVolumeDown, MdVolumeOff, MdVolumeUp } from "react-icons/md";
-import { ContextPlayerProps } from "../../lib/contextType";
-import { CurrPlayingContext } from "../../lib/globalContext";
 import { isMobile } from "../../lib/mobileCheck";
 import "../../css/volumeBar.css";
+import { useTabs } from '../../hooks/useTabs';
+import { usePlayerInfo } from '../../hooks/usePlayerInfo';
 
 /**
 * This button is primarily meant for computers
@@ -11,11 +10,12 @@ import "../../css/volumeBar.css";
 * sound of app but more likely you change the global sound
 */
 export const MuteVolumeBtn = () => {
-    const { playerState, actions, currentTab } =
-        useContext<ContextPlayerProps>(CurrPlayingContext);
+    const { currentTab } = useTabs();
+    const { playerState, actions } = usePlayerInfo();
+
     if (isMobile()) return null;
 
-    const horizontal = currentTab === "Song";
+    const horizontal = currentTab.type === "Song";
     const shown = playerState.muted ? 0 : playerState.volume;
     const percent = Math.round(shown * 100);
     const Icon = shown === 0 ? MdVolumeOff : shown < 0.5 ? MdVolumeDown : MdVolumeUp;

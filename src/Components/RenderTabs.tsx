@@ -5,22 +5,20 @@ import { Lyrics } from "./Sections/Lyrics";
 import { Settings } from "./Sections/Settings";
 import { Song } from "./Sections/Song";
 import { SongQueue } from "./Sections/SongQueue";
-import { Album } from "../lib/audioTypes";
-import { useContext } from "react";
-import { ContextPlayerProps } from "../lib/contextType";
-import { CurrPlayingContext } from "../lib/globalContext";
+import { Album } from "../lib/types/audioTypes";
+import { useTabs } from '../hooks/useTabs';
 
-export type Tabs = "Home" | "Album" | "Song" | "Queue" | "Lyrics" | "Settings" | "Conflicts";
-export const RenderTabs = ({ albums }: { albums: Album[] }) => {
-    const playerInfo = useContext<ContextPlayerProps>(CurrPlayingContext);
-    switch (playerInfo.currentTab) {
+export const RenderTabs = ({ albums }: { albums: Album[]; }) => {
+    const { currentTab } = useTabs();
+
+    switch (currentTab.type) {
         case "Home":
             return <Home albums={albums} />;
         case "Song":
             return <Song />;
         case "Album":
-            return <AlbumSection />;
-        case "Queue":
+            return <AlbumSection album={currentTab.album} />;
+        case "Song":
             return <SongQueue />;
         case "Lyrics":
             return <Lyrics />;

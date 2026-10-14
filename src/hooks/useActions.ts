@@ -1,9 +1,10 @@
 import { invoke } from "@tauri-apps/api/core";
 import { PlayerActions, PlayerState } from "../lib/playerActions";
 import { Dispatch, SetStateAction } from "react";
-import { Tabs } from "../Components/RenderTabs";
 import { withTransition } from "../lib/viewTransition";
 import { useShortcuts } from "./useShortcuts";
+import { useTabs } from './useTabs';
+import { Album } from '../lib/types/audioTypes';
 
 /**
  * Handles all input that happens during the runtime
@@ -11,16 +12,14 @@ import { useShortcuts } from "./useShortcuts";
  * */
 export const useActions = (
     setPlayerState: Dispatch<SetStateAction<PlayerState>>,
-    setLastTab: Dispatch<SetStateAction<Tabs>>,
-    setCurrentTab: Dispatch<SetStateAction<Tabs>>,
-    currentTab: Tabs,
-    lastTab: Tabs,
     playerState: PlayerState
 ) => {
+    const { currentTab, changeTo, changeToPrevious } = useTabs();
+
     const actions: PlayerActions = {
         togglePlay: () => {
             invoke("toggle");
-            setPlayerState(s => s.togglePlay())
+            setPlayerState(s => s.togglePlay());
         },
         toggleRepeat: () => setPlayerState(s => s.toggleRepeat()),
         toggleShuffle: () => setPlayerState(s => s.toggleShuffle()),
@@ -37,43 +36,49 @@ export const useActions = (
             const volume = Math.min(1, Math.max(0, num));
             invoke("set_volume", { volume })
                 .then(() => invoke("set_mute", { muted: false }))
-                .then(() => setPlayerState(s => s.setVolume(volume).unmute()))
+                .then(() => setPlayerState(s => s.setVolume(volume).unmute()));
         },
         pressShuffle: () => { /* This is going to be little longer
             cuz it requires also saving the state before shuffle*/ },
-        setAlbumSection: () => {
-            setLastTab(currentTab);
-            setCurrentTab("Album");
+        setAlbumSection: (album: Album) => {
+            changeTo({ type: "Album", album });
         },
         setHome: () => {
-            setLastTab(currentTab);
-            setCurrentTab("Home");
+            changeTo({ type: "Home" });
         },
         setLyrics: () => {
-            setLastTab(currentTab);
-            setCurrentTab("Lyrics");
+            changeTo({ type: "Lyrics" });
         },
         setQueue: () => {
-            setLastTab(currentTab);
-            setCurrentTab("Queue");
+            changeTo({ type: "Song" });
         },
         setSong: () => {
-            setLastTab(currentTab);
-            setCurrentTab("Song");
+            changeTo({ type: "Song" });
         },
         setPrevious: () => {
             /// Basically only to trigger the transition nothing insane
-            withTransition(() => setCurrentTab(lastTab))
-            setLastTab(currentTab);
+            withTransition(() => changeToPrevious());
         },
         setConflicts: () => {
-            setLastTab(currentTab);
-            setCurrentTab("Conflicts");
+            changeTo({ type: "Conflicts" });
         },
         setSettings: () => {
-            setLastTab(currentTab);
-            setCurrentTab("Settings");
+            changeTo({ type: "Settings" });
         },
+    };
+
+    const volumeUp = () => {
+        actions.setVolume(playerState.volume + 0.05);
+    };
+
+    const volumeDown = () => {
+        actions.setVolume(playerState.volume - 0.05);
+    };
+
+    const changeTab = () => {
+        if (currentTab.type === "Home") {
+            withTransition(() => actions.setSong());
+        }
     };
 
     useShortcuts({
@@ -83,16 +88,9 @@ export const useActions = (
         m: actions.toggleMute,
         q: actions.setQueue,
         p: actions.togglePlay,
-        tab: () => {
-            if (currentTab === "Home") {
-                withTransition(() => actions.setSong());
-            }
-        },
-        arrowup: () => {
-            console.log("up");
-            actions.setVolume(playerState.volume + 0.05)
-        },
-        arrowdown: () => actions.setVolume(playerState.volume - 0.05),
+        tab: changeTab,
+        arrowup: volumeUp,
+        arrowdown: volumeDown,
         /* This won't work most likely, because OS takes the media
         *  play pause key and thinks it's for different app
         *  This will be handled probably in Rust backend
@@ -101,8 +99,8 @@ export const useActions = (
         " ": actions.togglePlay,
         o: actions.setSettings,
         "!": actions.setConflicts,
-        escape: () => currentTab !== "Home" ? withTransition(() => actions.setHome()) : {},
+        escape: actions.setPrevious,
     });
 
     return actions;
-}
+};
