@@ -62,7 +62,10 @@ export const useActions = (
             // we will remove it because it sometimes
             // bugs the UI.
             if (currentTab.type === "Song") {
-                withTransition(() => changeToPrevious());
+                withTransition(() => changeToPrevious(), "Song");
+            }
+            else if (currentTab.type === "Album") {
+                withTransition(() => changeToPrevious(), "Album");
             }
             else {
                 changeToPrevious();
@@ -89,7 +92,7 @@ export const useActions = (
         // setting the same tab, but not the
         // tab key
         if (currentTab.type !== "Song") {
-            withTransition(() => actions.setSong());
+            withTransition(() => actions.setSong(), "Song");
         }
     };
 

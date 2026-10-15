@@ -1,5 +1,6 @@
 import { usePlayerInfo } from '../../hooks/usePlayerInfo';
 import { Album } from "../../lib/types/audioTypes";
+import { withTransition } from '../../lib/viewTransition';
 import { AlbumPreview } from '../General/AlbumPreview';
 
 export const Home = ({ albums }: { albums: Album[]; }) => {
@@ -11,7 +12,9 @@ export const Home = ({ albums }: { albums: Album[]; }) => {
                 <AlbumPreview
                     key={album.id}
                     album={album}
-                    onClick={() => playerInfo.actions.setAlbumSection(album)}
+                    onClick={() => withTransition(() => {
+                        playerInfo.actions.setAlbumSection(album)
+                    }, "Album")}
                 />
             ))}
         </div>

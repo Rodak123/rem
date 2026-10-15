@@ -4,6 +4,7 @@ import { IoPause, IoPlay } from "react-icons/io5";
 import { ProgressBar } from "./../AudioPlayer/Progressbar";
 import { MuteVolumeBtn } from "../AudioPlayer/MuteVolumeBtn";
 import { usePlayerInfo } from '../../hooks/usePlayerInfo';
+import { vt } from "../../lib/viewTransition";
 
 /**
     This component is for showing the currently played song in fullscreen.
@@ -18,7 +19,7 @@ export const Song = () => {
         <div className="flex items-center justify-center flex-col w-full">
             <div className="flex items-center justify-center flex-col
             gap-6">
-                <div style={{ viewTransitionName: "player-vinyl" } as React.CSSProperties}>
+                <div {...vt("player-vinyl", "Song")}>
                     <Vinyl progress={playerInfo.playerState.progress}
                         track={playerInfo.track}
                         spinning={playerInfo.playerState.playing}
@@ -26,16 +27,16 @@ export const Song = () => {
                 </div>
                 <span className="min-w-0">
                     <span
-                        style={{ viewTransitionName: "player-title" } as React.CSSProperties}
+                        {...vt("player-title", "Song")}
                         className="block truncate text-7xl
                     font-medium leading-tight">{playerInfo.track.title}</span>
                     <span
-                        style={{ viewTransitionName: "player-author" } as React.CSSProperties}
+                        {...vt("player-author", "Song")}
                         className="block truncate text-xl text-muted">{playerInfo.track.author}</span>
                 </span>
                 <MuteVolumeBtn />
                 <div className="w-full"
-                    style={{ viewTransitionName: "progress-bar" } as React.CSSProperties}>
+                    {...vt("progress-bar", "Song")}>
                     <ProgressBar current={playerInfo.playerState.progress}
                         duration={playerInfo.track.duration ?? 0}
                         onSeek={playerInfo.actions.setSeek}
@@ -51,8 +52,7 @@ export const Song = () => {
                         title={playerInfo.playerState.playing ? "Pause (P)" : "Play (P)"}
                         className="grid size-15 shrink-0 cursor-pointer place-items-center rounded-full
                         border border-foreground/40 transition-colors hover:bg-hover-bg"
-                        style={{ viewTransitionName: "play-pause-btn" } as React.CSSProperties}
-                    >
+                        {...vt("play-pause-btn", "Song")}>
                         {playerInfo.playerState.playing ? <IoPause size={40} /> : <IoPlay size={40} />}
                     </button>
                     <button>

@@ -3,6 +3,7 @@ import { isMobile } from "../../lib/mobileCheck";
 import "../../css/volumeBar.css";
 import { useTabs } from '../../hooks/useTabs';
 import { usePlayerInfo } from '../../hooks/usePlayerInfo';
+import { vt } from "../../lib/viewTransition";
 
 /**
 * This button is primarily meant for computers
@@ -37,7 +38,7 @@ export const MuteVolumeBtn = () => {
     return (
         <div
             className="relative group flex items-center"
-            style={{ viewTransitionName: "mute-volume-btn" } as React.CSSProperties}
+            {...vt("mute-volume-btn", "Song")}
             onWheel={(e) =>
                 actions.setVolume(playerState.volume + (e.deltaY < 0 ? 0.05 : -0.05))
             }

@@ -2,19 +2,24 @@ import { IoPause, IoPlay } from "react-icons/io5";
 import { Vinyl } from "./Vinyl";
 import { useSwipe } from "../../hooks/useSwipe";
 import { ProgressBar } from "./Progressbar";
-import { withTransition } from "../../lib/viewTransition";
+import { vt, withTransition } from "../../lib/viewTransition";
 import { MuteVolumeBtn } from "./MuteVolumeBtn";
 import { usePlayerInfo } from '../../hooks/usePlayerInfo';
 
 export const MiniPlayer = () => {
     const miniPlayerInfo = usePlayerInfo();
 
-    const expand = () => withTransition(miniPlayerInfo.actions.setSong);
+    const expand = () => withTransition(miniPlayerInfo.actions.setSong, "Song");
     // Swipe up (or tap) on the vinyl / title area pulls the full player up
     const swipe = useSwipe({ onUp: miniPlayerInfo.actions.setSong });
 
     return (
-        <div className="rounded-3xl border
+        <div
+            {
+            /* Because Album makes the transition broken, we will make exception */
+            ...vt("mini-player", "Album")
+            }
+            className="rounded-3xl border
             fixed bottom-4 w-21/22
             bg-background-dark
             left-1/2
@@ -28,12 +33,8 @@ export const MiniPlayer = () => {
                     className="flex min-w-0 flex-1
                     cursor-pointer touch-none items-center gap-3 text-left"
                 >
-                    {/*
-                        Hopefully this is your first encounter with `viewTransitionName`, else ... sorry
-                        Anyways you can add this name to element for sick transition from MiniPlayer into
-                        Song Tab. You just need put the same name of elememnts and webview will do the rest
-                    */}
-                    <div style={{ viewTransitionName: "player-vinyl" } as React.CSSProperties}>
+                    <div
+                        {...vt("player-vinyl", "Song")}>
                         <Vinyl progress={miniPlayerInfo.playerState.progress}
                             track={miniPlayerInfo.track}
                             spinning={miniPlayerInfo.playerState.playing}
@@ -41,11 +42,11 @@ export const MiniPlayer = () => {
                     </div>
                     <span className="min-w-0">
                         <span
-                            style={{ viewTransitionName: "player-title" } as React.CSSProperties}
+                            {...vt("player-title", "Song")}
                             className="block truncate text-lg font-medium
                         leading-tight">{miniPlayerInfo.track.title}</span>
                         <span
-                            style={{ viewTransitionName: "player-author" } as React.CSSProperties}
+                            {...vt("player-author", "Song")}
                             className="block truncate text-sm text-muted">
                             {miniPlayerInfo.track.author}</span>
                     </span>
@@ -63,13 +64,13 @@ export const MiniPlayer = () => {
                     place-items-center rounded-full border
                     border-foreground/40 transition-colors
                     hover:bg-hover-bg"
-                    style={{ viewTransitionName: "play-pause-btn" } as React.CSSProperties}
+                    {...vt("play-pause-btn", "Song")}
                 >
                     {miniPlayerInfo.playerState.playing ? <IoPause size={20} /> : <IoPlay size={20} />}
                 </button>
             </div>
 
-            <div style={{ viewTransitionName: "progress-bar" } as React.CSSProperties}>
+            <div {...vt("progress-bar", "Song")}>
                 <ProgressBar current={miniPlayerInfo.playerState.progress}
                     duration={miniPlayerInfo.track.duration ?? 0}
                     onSeek={miniPlayerInfo.actions.setSeek} className="mt-3" />

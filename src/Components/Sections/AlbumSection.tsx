@@ -1,4 +1,5 @@
 import { Album } from '../../lib/types/audioTypes';
+import { vt } from '../../lib/viewTransition';
 import { AlbumPreview } from '../General/AlbumPreview';
 
 interface AlbumSectionProps {
@@ -11,7 +12,9 @@ export const AlbumSection: React.FC<AlbumSectionProps> = ({ album }) => {
             <div className='w-full flex gap-4'>
                 <AlbumPreview album={album} showTitle={false} className='grow' />
                 <div className='grow w-1/2 flex flex-col'>
-                    <h1 className='text-2xl p-1'>{album.title}</h1>
+                    <h1
+                        {...vt(`album-title-${album.id}`, "Album")}
+                        className='text-2xl p-1'>{album.title}</h1>
                     <div className='grow'>
                         <p className="text-lg">Short description about the album :P</p>
                     </div>

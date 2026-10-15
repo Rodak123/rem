@@ -1,6 +1,6 @@
 :root {
-    --main: #b82a20;
-    --main-alt: #D96669;
+    --main: #7adce5;
+    --main-alt: #c1fbff;
 
     --background: #ffffff;
     --foreground: #000000;
@@ -128,8 +128,18 @@ body {
     object-position: left center;
 }
 
+::view-transition-group(mini-player) {
+    animation: none;
+    z-index: 100;
+}
+
 .vt-active .vinyl-spin,
 .vt-active .vinyl-arm {
     animation-play-state: paused !important;
     transition: none !important;
+}
+
+.album-cover,
+.vinyl {
+    will-change: transform;
 }
