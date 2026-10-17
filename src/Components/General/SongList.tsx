@@ -4,7 +4,6 @@ import { cn } from '../../lib/utils';
 import { CreatorLink } from './ArtistLink';
 import { BsThreeDotsVertical } from 'react-icons/bs';
 import { useState } from 'react';
-import { MdPlaylistAdd } from 'react-icons/md';
 
 interface SongListItemProps {
     listProps: SongListProps;
@@ -51,6 +50,7 @@ const SongListItem: React.FC<SongListItemProps> = ({ listProps, index, toggleMen
                 <div className="flex flex-row gap-2">
                     {song.author.map((author, index) => {
                         // This will pass the song author id instead
+                        console.log(author);
                         const creatorId = index;
                         return <CreatorLink key={`${index}-${creatorId}`} creatorId={creatorId} />;
                     })}

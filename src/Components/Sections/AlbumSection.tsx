@@ -45,6 +45,7 @@ export const AlbumSection: React.FC<AlbumSectionProps> = ({ album }) => {
                     <div className="flex flex-row gap-2">
                         {album.artist.map((artist, index) => {
                             // This will pass the album artist id instead
+                            console.log(artist);
                             const creatorId = index;
                             return <CreatorLink key={`${index}-${creatorId}`} creatorId={creatorId} />;
                         })}

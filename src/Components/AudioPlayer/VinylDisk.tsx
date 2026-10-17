@@ -8,18 +8,18 @@ interface VinylDiskProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export const VinylDisk: React.FC<VinylDiskProps> = ({ coverArt, spinning = false, spinDelay = '0', className, style, ...props }) => {
-    const oldDesign = (
-        <>
-            <img src={coverArt} alt="cover art" className="rounded-full w-full h-full" />
-            <div
-                className="rounded-full z-10 w-full h-full absolute left-0 top-0"
-                style={{
-                    background:
-                        "repeating-radial-gradient(circle at center, #1b1b1b 0 2px, transparent 2px 4px)",
-                }}
-            />
-        </>
-    );
+    // const oldDesign = (
+    //     <>
+    //         <img src={coverArt} alt="cover art" className="rounded-full w-full h-full" />
+    //         <div
+    //             className="rounded-full z-10 w-full h-full absolute left-0 top-0"
+    //             style={{
+    //                 background:
+    //                     "repeating-radial-gradient(circle at center, #1b1b1b 0 2px, transparent 2px 4px)",
+    //             }}
+    //         />
+    //     </>
+    // );
 
     const newDesign = (
         <>
