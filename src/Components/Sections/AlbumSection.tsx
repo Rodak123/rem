@@ -32,8 +32,8 @@ export const AlbumSection: React.FC<AlbumSectionProps> = ({ album }) => {
     const totalDurationSeconds = songs.length * 120;
 
     return (
-        <div className="p-3 flex justify-between max-md:flex-col lg:flex-row gap-4 relative">
-            <div className="flex flex-col lg:sticky lg:top-15 h-min">
+        <div className="p-3 flex justify-between max-md:flex-col md:flex-row gap-4 relative">
+            <div className="flex flex-col md:sticky md:top-15 h-min">
                 <div>
                     <h1
                         {...vt(`album-title-${album.id}`, "Album")}
