@@ -3,11 +3,11 @@ import { cn } from '../../lib/utils';
 
 interface VinylDiskProps extends React.HTMLAttributes<HTMLDivElement> {
     coverArt?: string;
-    spinning: boolean;
-    spinDelay: CSSProperties['animationDelay'];
+    spinning?: boolean;
+    spinDelay?: CSSProperties['animationDelay'];
 }
 
-export const VinylDisk: React.FC<VinylDiskProps> = ({ coverArt, spinning, spinDelay, className, style, ...props }) => {
+export const VinylDisk: React.FC<VinylDiskProps> = ({ coverArt, spinning = false, spinDelay = '0', className, style, ...props }) => {
     const oldDesign = (
         <>
             <img src={coverArt} alt="cover art" className="rounded-full w-full h-full" />

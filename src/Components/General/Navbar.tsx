@@ -48,7 +48,7 @@ export const Navbar = ({ hasConflicts = false }: NavbarProps) => {
     }, [isHome, currentTab]);
 
     return (
-        <div className="sticky z-5 top-0 flex items-center bg-background-dark py-3 justify-between px-5 mb-9">
+        <div className="sticky z-50 top-0 flex items-center bg-background-dark py-3 justify-between px-5 mb-9">
             {leftBtn}
             <Search />
             <button onClick={isSettings ? playerInfo.actions.setPrevious : playerInfo.actions.setSettings} aria-label="Settings" className="group cursor-pointer">
