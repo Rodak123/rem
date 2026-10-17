@@ -33,8 +33,7 @@ export const AlbumSection: React.FC<AlbumSectionProps> = ({ album }) => {
 
     return (
         <div className="p-3 flex justify-between max-md:flex-col lg:flex-row gap-4 relative">
-            {/* I really tried to make it sticky correctly. However since the navbar is the one dictating the gap, I don't think I'll make it work */}
-            <div className="flex flex-col lg:sticky lg:top-0 h-min">
+            <div className="flex flex-col lg:sticky lg:top-15 h-min">
                 <div>
                     <h1
                         {...vt(`album-title-${album.id}`, "Album")}
