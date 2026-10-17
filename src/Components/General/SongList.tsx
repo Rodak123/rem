@@ -30,7 +30,7 @@ const SongListItem: React.FC<SongListItemProps> = ({ listProps, index, toggleMen
     return (
         <div
             key={`${song.id}-${index}`}
-            className="rounded bg-background-dark h-20 flex items-center group cursor-pointer border border-transparent hover:border-foreground/30"
+            className="rounded bg-background-dark h-20 w-full flex items-center group cursor-pointer border border-transparent hover:border-foreground/30"
             onClick={() => listProps.onSongClicked(index)}
             title={`Play ${song.title}`}
         >
@@ -42,8 +42,9 @@ const SongListItem: React.FC<SongListItemProps> = ({ listProps, index, toggleMen
                 <p className="text-2xl p-1 block group-hover:hidden">{index + 1}</p>
                 <p className="hidden group-hover:block"><IoPlay size={20} /></p>
             </div>
-            <div className="grow flex flex-col">
-                <p className="text-lg">
+            <div className="grow flex flex-col min-w-0">
+                {/* ToDo: Truncate should be replaced by scrolling text */}
+                <p className="text-lg truncate">
                     {song.title}
                 </p>
 
@@ -118,7 +119,7 @@ interface SongListProps extends React.HTMLAttributes<HTMLDivElement> {
  * When the DB is implemented, the Track type will be replaced with songs IDs.
  */
 export const SongList: React.FC<SongListProps> = (listProps) => {
-    const { songs, onSongClicked, className, ...props } = listProps;
+    const { songs, onSongClicked, menuOptions, className, ...props } = listProps;
 
     const [openMenuIndex, setOpenMenuIndex] = useState<number>(-1);
 
