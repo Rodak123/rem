@@ -70,7 +70,7 @@ export const AlbumSection: React.FC<AlbumSectionProps> = ({ album }) => {
                     </AlbumPreview>
                 </div>
                 <div className="flex flex-row gap-4 md:gap-2 justify-start md:justify-around items-center h-8">
-                    <p>{formatDuration(totalDurationSeconds, ' : ', true)}</p>
+                    <p>{formatDuration(totalDurationSeconds, true)}</p>
                     <p>{album.trackCount} Songs</p>
                     <div className="flex gap-2 items-center h-full">
                         <p>{disks.length} Disks</p>
