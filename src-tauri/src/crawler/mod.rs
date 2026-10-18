@@ -107,13 +107,6 @@ pub fn db_update(directories: Vec<PathBuf>, db: Arc<DB>) {
             }
         }
         sync_tracks(report, Arc::clone(&known), Arc::clone(&db)).await?;
-
-        // // This insert is fine because it's based on path not ID
-        // if let Ok(Ok(report)) = task.await
-        //     && let Err(e) = db.track_insert_many(&report.tracks).await
-        // {
-        //     eprintln!("db: inserting tracks failed: {e}");
-        // }
         Ok::<(), anyhow::Error>(())
     });
 }
