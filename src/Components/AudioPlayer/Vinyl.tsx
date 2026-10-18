@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Track } from "../../lib/types/audioTypes";
 
-type VinylProps = { spinning: boolean; className?: string; track: Track, progress: number; };
+type VinylProps = { spinning: boolean; className?: string; track: Track | null, progress: number; };
 
 const ARM_START_ANGLE = 18;
 const ARM_END_ANGLE = 30;
@@ -23,28 +23,40 @@ export const Vinyl = ({ spinning, className, track, progress }: VinylProps) => {
         );
     }, [targetAngle]);
     const [spinDelay] = useState(() => `-${performance.now() % 6000}ms`);
+    const [coverUrl, setCoverUrl] = useState<string | undefined>(undefined);
+    useEffect(() => {
+        if (!track || !track.cover) {
+            setCoverUrl(undefined);
+            return;
+        }
+        const url = URL.createObjectURL(
+            new Blob([new Uint8Array(track.cover)], { type: "image/jpeg" })
+        );
+        setCoverUrl(url);
+        return () => URL.revokeObjectURL(url);
+    }, [track, track?.cover]);
 
 
-    const oldDesign = (
-        <div className="relative aspect-square rounded-full border-2 border-foreground/40">
-            <div
-                className="vinyl-spin relative inset-0 w-full h-full animate-[spin_6s_linear_infinite] rounded-full motion-reduce:animate-none"
-                style={{
-                    animationPlayState: spinning ? "running" : "paused",
-                    animationDelay: spinDelay,
-                }}
-            >
-                <img src={track?.cover} alt="cover art" className="rounded-full w-full h-full" />
-                <div
-                    className="rounded-full z-10 w-full h-full absolute left-0 top-0"
-                    style={{
-                        background:
-                            "repeating-radial-gradient(circle at center, #1b1b1b 0 2px, transparent 2px 4px)",
-                    }}
-                />
-            </div>
-        </div>
-    );
+    // const oldDesign = (
+    //     <div className="relative aspect-square rounded-full border-2 border-foreground/40">
+    //         <div
+    //             className="vinyl-spin relative inset-0 w-full h-full animate-[spin_6s_linear_infinite] rounded-full motion-reduce:animate-none"
+    //             style={{
+    //                 animationPlayState: spinning ? "running" : "paused",
+    //                 animationDelay: spinDelay,
+    //             }}
+    //         >
+    //             <img src={coverUrl} alt="cover art" className="rounded-full w-full h-full" />
+    //             <div
+    //                 className="rounded-full z-10 w-full h-full absolute left-0 top-0"
+    //                 style={{
+    //                     background:
+    //                         "repeating-radial-gradient(circle at center, #1b1b1b 0 2px, transparent 2px 4px)",
+    //                 }}
+    //             />
+    //         </div>
+    //     </div>
+    // );
 
     const newDesign = (
         <div className="relative aspect-square rounded-full border-2 border-foreground/40">
@@ -70,7 +82,7 @@ export const Vinyl = ({ spinning, className, track, progress }: VinylProps) => {
                     }}
                 />
                 <div className="absolute inset-[23%] grid place-items-center rounded-full">
-                    <img src={track?.cover} alt="cover art" className="rounded-full w-full h-full" />
+                    <img src={coverUrl} alt="cover art" className="rounded-full w-full h-full" />
                     <div className="size-[12%] rounded-full bg-background z-15 absolute" />
                 </div>
             </div>
@@ -79,8 +91,8 @@ export const Vinyl = ({ spinning, className, track, progress }: VinylProps) => {
 
     return (
         <div className={`relative shrink-0 ${className}`}>
-            {/*newDesign*/}
-            {oldDesign}
+            {newDesign}
+            {/*oldDesign*/}
 
             <div
                 className="absolute z-1 pointer-events-none"

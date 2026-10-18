@@ -8,6 +8,6 @@ import { PlayerActions, PlayerState } from "../playerActions";
 // this may cause it
 export type ContextPlayerProps = {
     playerState: PlayerState;
-    track: Track;
+    track: Track | null;
     actions: PlayerActions;
 };

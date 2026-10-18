@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "../css/style.css";
 import { Navbar } from "./General/Navbar";
-import { Album, toTrack, Track } from "../lib/types/audioTypes";
+import { Album, Track } from "../lib/types/audioTypes";
 import { MiniPlayer } from "./AudioPlayer/MiniPlayer";
 import { PlayerState } from "../lib/playerActions";
 import { miniPlayerBlacklist } from "../lib/miniPlayerBlacklist";
@@ -23,20 +23,24 @@ function App() {
 
     /// I know it's wrong but this is just something for a demo
     //  Also I have no fucking idea, how the DB will look
-    const [currentTrack, setCurrentTrack] = useState<Track>(toTrack(ALBUMS[0], import.meta.env.VITE_TESTING_SOUND_LINK, 171));
+    const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
+
     const [playerState, setPlayerState] = useState(new PlayerState);
     // const [hasConflicts] = useState(false);
 
     useBackendListener(
-        currentTrack,
-        setCurrentTrack,
         setPlayerState
     );
 
     const actions = useActions(
         setPlayerState,
+        setCurrentTrack,
         playerState
     );
+
+    useEffect(() => {
+        actions.loadSong(import.meta.env.VITE_TESTING_SOUND_LINK, false);
+    }, []);
 
     return (
         <CurrPlayingContext.Provider value={{

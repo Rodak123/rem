@@ -7,19 +7,11 @@ export type Album = {
 
 export type Track = {
     id: string;
+    title: string;
+    comment: string;
     path: string;
-    title?: string;
-    author: string[];
     duration: number;
-    cover?: string;
+    author: string[];
+    cover?: number[];
+    if_favorite: boolean;
 };
-
-
-export const toTrack = (album: Album, path: string, duration: number): Track => ({
-    id: album.id,
-    title: album.title,
-    author: album.artist,
-    duration: duration,
-    cover: album.cover,
-    path: path
-});

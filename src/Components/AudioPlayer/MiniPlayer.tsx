@@ -44,11 +44,11 @@ export const MiniPlayer = () => {
                         <span
                             {...vt("player-title", "Song")}
                             className="block truncate text-lg font-medium
-                        leading-tight">{miniPlayerInfo.track.title}</span>
+                        leading-tight">{miniPlayerInfo.track?.title}</span>
                         <span
                             {...vt("player-author", "Song")}
                             className="block truncate text-sm text-muted">
-                            {miniPlayerInfo.track.author}</span>
+                            {miniPlayerInfo.track?.author}</span>
                     </span>
                 </button>
 
@@ -72,7 +72,7 @@ export const MiniPlayer = () => {
 
             <div {...vt("progress-bar", "Song")}>
                 <ProgressBar current={miniPlayerInfo.playerState.progress}
-                    duration={miniPlayerInfo.track.duration ?? 0}
+                    duration={miniPlayerInfo.track?.duration ?? 0}
                     onSeek={miniPlayerInfo.actions.setSeek} className="mt-3" />
             </div>
         </div>
