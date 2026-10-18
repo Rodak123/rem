@@ -8,11 +8,13 @@ export type Album = {
 
 export type Track = {
     id: string;
+    title: string;
+    comment: string;
     path: string;
-    title?: string;
-    author: string[];
     duration: number;
-    cover?: string;
+    author: string[];
+    cover?: number[];
+    if_favorite: boolean;
     diskNumber: number;
 };
 
@@ -20,13 +22,3 @@ export type AlbumDisk = {
     number: number;
     trackCount: number;
 };
-
-export const toTrack = (album: Album, path: string, duration: number): Track => ({
-    id: album.id,
-    title: `${album.title} Song`,
-    author: album.artist,
-    duration: duration,
-    cover: album.cover,
-    path: path,
-    diskNumber: 1,
-});

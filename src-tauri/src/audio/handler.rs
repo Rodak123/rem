@@ -7,7 +7,6 @@ use tauri::AppHandle;
 use crate::audio::request::AudioRequest;
 use crate::structs::audio::options::AudioOptions;
 use crate::structs::audio::realtime::AudioRealTimeInfo;
-use crate::structs::audio::track::Track;
 
 /// How does the handler works:
 /// "C'mon, do something...":
@@ -71,10 +70,6 @@ impl AudioHandler {
                                 }) {
                                     Ok(source) => {
                                         player.append(source);
-                                        // This can crash just because put wrong path
-                                        // App can work still
-                                        // TODO: Add extra event that emits error messages
-                                        let _ = Track::send_track_data(path, &app);
                                     }
                                     Err(e) => eprintln!("audio: load failed: {e}"),
                                 }

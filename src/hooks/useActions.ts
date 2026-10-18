@@ -4,7 +4,7 @@ import { Dispatch, SetStateAction } from "react";
 import { withTransition } from "../lib/viewTransition";
 import { useShortcuts } from "./useShortcuts";
 import { useTabs } from './useTabs';
-import { Album } from '../lib/types/audioTypes';
+import { Album, Track } from '../lib/types/audioTypes';
 
 /**
  * Handles all input that happens during the runtime
@@ -12,6 +12,7 @@ import { Album } from '../lib/types/audioTypes';
  * */
 export const useActions = (
     setPlayerState: Dispatch<SetStateAction<PlayerState>>,
+    setCurrentTrack: Dispatch<SetStateAction<Track | null>>,
     playerState: PlayerState
 ) => {
     const { currentTab, changeTo, changeToPrevious } = useTabs();
@@ -37,6 +38,20 @@ export const useActions = (
             invoke("set_volume", { volume })
                 .then(() => invoke("set_mute", { muted: false }))
                 .then(() => setPlayerState(s => s.setVolume(volume).unmute()));
+        },
+        loadSong: (path, automatic_start: boolean) => {
+            const process = async () => {
+                const track: Track | null = await invoke("load_track", { path });
+                setCurrentTrack(track);
+                const img = await invoke<number[]>("get_raw_img", { path });
+                setCurrentTrack(t => (t ? { ...t, cover: img } : t));
+                setPlayerState(s => s.pause());
+                if (automatic_start) {
+                    setPlayerState(s => s.play());
+                    invoke("toggle");
+                }
+            }
+            process()
         },
         pressShuffle: () => { /* This is going to be little longer
             cuz it requires also saving the state before shuffle*/ },

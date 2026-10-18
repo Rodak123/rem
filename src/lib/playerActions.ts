@@ -48,6 +48,7 @@ export class PlayerState {
 
 export type PlayerActions = {
     togglePlay: () => void;
+    loadSong: (path: string, automatic_start: boolean) => void;
     toggleRepeat: () => void;
     toggleShuffle: () => void;
     pressShuffle: () => void;

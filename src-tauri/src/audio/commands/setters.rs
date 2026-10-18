@@ -1,11 +1,6 @@
 use crate::audio::{handler::AudioHandler, request::AudioRequest};
-use std::{path::PathBuf, time::Duration};
+use std::time::Duration;
 use tauri::{Result, State};
-
-#[tauri::command]
-pub fn load_track(path: PathBuf, player: State<AudioHandler>) -> Result<()> {
-    Ok(player.send(AudioRequest::Load(path))?)
-}
 
 #[tauri::command]
 pub fn toggle(player: State<AudioHandler>) -> Result<()> {

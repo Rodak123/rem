@@ -2,7 +2,6 @@ import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { AudioOptions, AudioRealTimeInfo } from "../lib/backendEvents";
-import { Track } from "../lib/types/audioTypes";
 import { PlayerState } from "../lib/playerActions";
 
 /**
@@ -10,12 +9,9 @@ import { PlayerState } from "../lib/playerActions";
  * Check out the AudioHandler in backend for better understanding.
 * */
 export const useBackendListener = (
-    currentTrack: Track,
-    setCurrentTrack: Dispatch<SetStateAction<Track>>,
     setPlayerState: Dispatch<SetStateAction<PlayerState>>
 ) => {
     useEffect(() => {
-        invoke("load_track", { path: currentTrack.path });
         // Most likely backend will read some settings from
         // last session, where the App will store things like
         // is muted, volume and so on
@@ -36,15 +32,9 @@ export const useBackendListener = (
                 setPlayerState(s => s.setProgress(position));
             }
         });
-        const loaded = listen<{ duration: number | null; }>("track-loaded", (e) => {
-            const duration = e.payload.duration;
-            if (duration == null) return;
-            setCurrentTrack(t => ({ ...t, duration: duration }));
-        });
 
         return () => {
             progress.then(f => f());
-            loaded.then(f => f());
         };
     }, []);
 };

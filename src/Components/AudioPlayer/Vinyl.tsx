@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Track } from "../../lib/types/audioTypes";
 import { VinylDisk } from './VinylDisk';
 
-type VinylProps = { spinning: boolean; className?: string; track: Track, progress: number; };
+type VinylProps = { spinning: boolean; className?: string; track: Track | null, progress: number; };
 
 const ARM_START_ANGLE = 18;
 const ARM_END_ANGLE = 30;
@@ -24,10 +24,22 @@ export const Vinyl = ({ spinning, className, track, progress }: VinylProps) => {
         );
     }, [targetAngle]);
     const [spinDelay] = useState(() => `-${performance.now() % 6000}ms`);
+    const [coverUrl, setCoverUrl] = useState<string | undefined>(undefined);
+    useEffect(() => {
+        if (!track || !track.cover) {
+            setCoverUrl(undefined);
+            return;
+        }
+        const url = URL.createObjectURL(
+            new Blob([new Uint8Array(track.cover)], { type: "image/jpeg" })
+        );
+        setCoverUrl(url);
+        return () => URL.revokeObjectURL(url);
+    }, [track, track?.cover]);
 
     return (
         <div className={`relative shrink-0 ${className}`}>
-            <VinylDisk coverArt={track.cover} spinning={spinning} spinDelay={spinDelay} id="true" />
+            <VinylDisk coverArt={coverUrl} spinning={spinning} spinDelay={spinDelay} id="true" />
 
             <div
                 className="absolute z-1 pointer-events-none"
