@@ -1,5 +1,5 @@
 use crate::{
-    crawler::{building::build_track, checker::merge_duplicates, collecting::collect_tracks},
+    crawler::{building::build_track, checker::sync_tracks, collecting::collect_tracks},
     db::DB,
     structs::audio::track::Track,
     utils::path::expand_tilde,
@@ -21,6 +21,18 @@ pub mod collecting;
 pub struct CrawlReport {
     pub tracks: Vec<Track>,
     pub failed: Vec<(PathBuf, anyhow::Error)>,
+}
+impl CrawlReport {
+    pub fn merge(&mut self, other: CrawlReport) {
+        self.tracks.extend(other.tracks);
+        self.failed.extend(other.failed);
+    }
+    pub fn empty() -> Self {
+        Self {
+            failed: vec![],
+            tracks: vec![],
+        }
+    }
 }
 
 /// Walks through the directory recursively,
@@ -65,7 +77,6 @@ fn crawl<P: AsRef<Path>>(directory: P, known: &HashMap<PathBuf, Track>) -> Resul
 /// Crawls through directories, fixes extra files and conflicts and
 /// insert into DB
 /// Rn the checker is really bad
-/// TODO: Fix the checker
 pub fn db_update(directories: Vec<PathBuf>, db: Arc<DB>) {
     tauri::async_runtime::spawn(async move {
         let known: Arc<HashMap<PathBuf, Track>> = match db.track_all().await {
@@ -75,32 +86,34 @@ pub fn db_update(directories: Vec<PathBuf>, db: Arc<DB>) {
                 Arc::default()
             }
         };
+
         let mut tasks = Vec::with_capacity(directories.len());
         for dir in directories {
             let known = Arc::clone(&known);
             let task: JoinHandle<Result<CrawlReport>> = tokio::task::spawn_blocking(move || {
-                let mut crawled = crawl(dir, &known)?;
+                let crawled = crawl(dir, &known)?;
                 for err in &crawled.failed {
                     eprintln!("{} | {}", err.0.display(), err.1);
                 }
-
-                // There will be more problems with this and
-                // mooore refactoring, but I'm just too tired.
-                // Leave me alone, ok?
-                merge_duplicates(&mut crawled.tracks)?;
                 Ok(crawled)
             });
             tasks.push(task);
         }
 
-        // This insert is fine because it's based on path not ID
+        let mut report = CrawlReport::empty();
         for task in tasks {
-            if let Ok(Ok(report)) = task.await
-                && let Err(e) = db.track_insert_many(&report.tracks).await
-            {
-                eprintln!("db: inserting tracks failed: {e}");
+            if let Ok(Ok(r)) = task.await {
+                report.merge(r);
             }
         }
+        sync_tracks(report, Arc::clone(&known), Arc::clone(&db)).await?;
+
+        // // This insert is fine because it's based on path not ID
+        // if let Ok(Ok(report)) = task.await
+        //     && let Err(e) = db.track_insert_many(&report.tracks).await
+        // {
+        //     eprintln!("db: inserting tracks failed: {e}");
+        // }
         Ok::<(), anyhow::Error>(())
     });
 }
