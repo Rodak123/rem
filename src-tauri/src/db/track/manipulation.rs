@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use anyhow::Result;
 use sqlx::{Executor, Sqlite};
 
@@ -172,5 +174,13 @@ impl DB {
         }
         tx.commit().await?;
         Ok(removed)
+    }
+
+    pub async fn delete_track_by_path<P: AsRef<Path>>(&self, path: P) -> Result<()> {
+        sqlx::query("DELETE FROM tracks WHERE path = ?")
+            .bind(path.as_ref().to_string_lossy())
+            .execute(&self.pool)
+            .await?;
+        Ok(())
     }
 }
