@@ -38,7 +38,10 @@ export const VinylDisk: React.FC<VinylDiskProps> = ({ coverArt, spinning = false
                 }}
             />
             <div className="absolute inset-[23%] grid place-items-center rounded-full">
-                <img src={coverArt} alt="cover art" className="rounded-full w-full h-full" />
+                {coverArt === undefined
+                    ? (<div className="bg-foreground w-full h-full rounded-full" />) // Maybe removing the placeholder bg looks nicer?
+                    : (<img src={coverArt} className="rounded-full w-full h-full" />)
+                }
                 <div className="size-[12%] rounded-full bg-background z-15 absolute" />
             </div>
         </>

@@ -48,9 +48,8 @@ const SongListItem: React.FC<SongListItemProps> = ({ listProps, index, toggleMen
                 </p>
 
                 <div className="flex flex-row gap-2">
-                    {song.author.map((author, index) => {
+                    {song.author.map((_, index) => {
                         // This will pass the song author id instead
-                        console.log(author);
                         const creatorId = index;
                         return <CreatorLink key={`${index}-${creatorId}`} creatorId={creatorId} />;
                     })}

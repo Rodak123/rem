@@ -15,6 +15,7 @@ export type Track = {
     author: string[];
     cover?: number[];
     if_favorite: boolean;
+
     diskNumber: number;
 };
 

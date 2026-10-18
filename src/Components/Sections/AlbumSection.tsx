@@ -22,14 +22,28 @@ export const AlbumSection: React.FC<AlbumSectionProps> = ({ album }) => {
     const playerInfo = usePlayerInfo();
 
     // ToDo: Replace with actual song and disk fetching from the album
+    const debugTrack: Track = playerInfo.track ?? {
+        id: "1",
+        author: ['Author'],
+        comment: 'comment',
+        diskNumber: 1,
+        duration: 140,
+        if_favorite: false,
+        path: '/Music/song.mp3',
+        title: 'Crazy Song',
+        cover: undefined,
+    };
+
     const disks: AlbumDisk[] = new Array(4).fill(0)
         .map((_, i, disks): AlbumDisk => ({ number: i + 1, trackCount: Math.floor(album.trackCount / disks.length) }));
     const songs: Track[] = new Array(album.trackCount).fill(0)
         .map((_, i) => ({
-            ...playerInfo.track,
+            ...debugTrack,
+            author: ["Author 1", "Author 2"],
             diskNumber: Math.floor(i / album.trackCount * disks.length) + 1
         }));
-    const totalDurationSeconds = songs.length * 120;
+
+    const totalDurationSeconds = songs.reduce((total, { duration }) => total + duration, 0);
 
     return (
         <div className="p-3 flex justify-between max-md:flex-col md:flex-row gap-4 relative">
@@ -42,9 +56,8 @@ export const AlbumSection: React.FC<AlbumSectionProps> = ({ album }) => {
                         {album.title}
                     </h1>
                     <div className="flex flex-row gap-2">
-                        {album.artist.map((artist, index) => {
+                        {album.artist.map((_, index) => {
                             // This will pass the album artist id instead
-                            console.log(artist);
                             const creatorId = index;
                             return <CreatorLink key={`${index}-${creatorId}`} creatorId={creatorId} />;
                         })}
@@ -77,6 +90,7 @@ export const AlbumSection: React.FC<AlbumSectionProps> = ({ album }) => {
                         {disks.map((disk) => {
                             return (
                                 <div
+                                    key={`disk-${disk.number}`}
                                     className={`bg-album-disk-${disk.number} text-background rounded-full aspect-square h-full flex items-center justify-center`}
                                     title={`Disk ${disk.number}`}
                                 >
