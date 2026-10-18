@@ -139,6 +139,32 @@ body {
     transition: none !important;
 }
 
+/* Album styles */
+
+.bg-album-disk-1 {
+    background-color: #f4f4f4;
+}
+
+.bg-album-disk-2 {
+    background-color: #38b764;
+}
+
+.bg-album-disk-3 {
+    background-color: #b13e53;
+}
+
+.bg-album-disk-4 {
+    background-color: #41a6f6;
+}
+
+.bg-album-disk-5 {
+    background-color: #ffcd75;
+}
+
+.bg-album-disk-6 {
+    background-color: #ef7d57;
+}
+
 .album-cover,
 .vinyl {
     will-change: transform;

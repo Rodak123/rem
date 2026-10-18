@@ -5,6 +5,7 @@ import { ProgressBar } from "./../AudioPlayer/Progressbar";
 import { MuteVolumeBtn } from "../AudioPlayer/MuteVolumeBtn";
 import { usePlayerInfo } from '../../hooks/usePlayerInfo';
 import { vt } from "../../lib/viewTransition";
+import { CreatorLink } from '../General/ArtistLink';
 
 /**
     This component is for showing the currently played song in fullscreen.
@@ -29,16 +30,26 @@ export const Song = () => {
                     <span
                         {...vt("player-title", "Song")}
                         className="block truncate text-7xl
-                    font-medium leading-tight">{playerInfo.track.title}</span>
+                    font-medium leading-tight">{playerInfo.track?.title ?? "Nothing playing..."}</span>
                     <span
                         {...vt("player-author", "Song")}
-                        className="block truncate text-xl text-muted">{playerInfo.track.author}</span>
+                        className="flex gap-2">
+                        {playerInfo.track?.author?.map((_, index) => {
+                            // This will pass the song author id instead
+                            const creatorId = index;
+                            return <CreatorLink
+                                key={`${index}-${creatorId}`}
+                                creatorId={creatorId}
+                                className="text-lg text-muted"
+                            />;
+                        })}
+                    </span>
                 </span>
                 <MuteVolumeBtn />
                 <div className="w-full"
                     {...vt("progress-bar", "Song")}>
                     <ProgressBar current={playerInfo.playerState.progress}
-                        duration={playerInfo.track.duration ?? 0}
+                        duration={playerInfo.track?.duration ?? 0}
                         onSeek={playerInfo.actions.setSeek}
                         className="stretch" />
                 </div>

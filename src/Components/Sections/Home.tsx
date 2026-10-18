@@ -12,8 +12,8 @@ export const Home = ({ albums }: { albums: Album[]; }) => {
         const process = async () => {
             const d: Track[] = await invoke("get_all_tracks");
             setData(d);
-        }
-        process()
+        };
+        process();
     }, []);
 
 
@@ -37,8 +37,9 @@ export const Home = ({ albums }: { albums: Album[]; }) => {
                     <AlbumPreview
                         key={album.id}
                         album={album}
+                        className="album-item"
                         onClick={() => withTransition(() => {
-                            playerInfo.actions.setAlbumSection(album)
+                            playerInfo.actions.setAlbumSection(album);
                         }, "Album")}
                     />
                 ))}

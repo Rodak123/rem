@@ -3,6 +3,7 @@ export type Album = {
     title?: string;
     artist: string[];
     cover?: string;
+    trackCount: number;
 };
 
 export type Track = {
@@ -14,4 +15,11 @@ export type Track = {
     author: string[];
     cover?: number[];
     if_favorite: boolean;
+
+    diskNumber: number;
+};
+
+export type AlbumDisk = {
+    number: number;
+    trackCount: number;
 };

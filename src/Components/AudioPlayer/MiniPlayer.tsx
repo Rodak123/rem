@@ -5,6 +5,7 @@ import { ProgressBar } from "./Progressbar";
 import { vt, withTransition } from "../../lib/viewTransition";
 import { MuteVolumeBtn } from "./MuteVolumeBtn";
 import { usePlayerInfo } from '../../hooks/usePlayerInfo';
+import { CreatorLink } from '../General/ArtistLink';
 
 export const MiniPlayer = () => {
     const miniPlayerInfo = usePlayerInfo();
@@ -24,7 +25,7 @@ export const MiniPlayer = () => {
             bg-background-dark
             left-1/2
             -translate-x-1/2
-            border-foreground/30 bg-card-bg p-3 z-3">
+            border-foreground/30 bg-card-bg p-3 z-50">
             <div className="flex items-center gap-3">
                 <button
                     {...swipe}
@@ -44,11 +45,21 @@ export const MiniPlayer = () => {
                         <span
                             {...vt("player-title", "Song")}
                             className="block truncate text-lg font-medium
-                        leading-tight">{miniPlayerInfo.track?.title}</span>
+                        leading-tight">{miniPlayerInfo.track?.title ?? "Nothing playing..."}</span>
                         <span
                             {...vt("player-author", "Song")}
-                            className="block truncate text-sm text-muted">
-                            {miniPlayerInfo.track?.author}</span>
+                            className="flex gap-2"
+                        >
+                            {miniPlayerInfo.track?.author?.map((_, index) => {
+                                // This will pass the song author id instead
+                                const creatorId = index;
+                                return <CreatorLink
+                                    key={`${index}-${creatorId}`}
+                                    creatorId={creatorId}
+                                    className="text-sm text-muted"
+                                />;
+                            })}
+                        </span>
                     </span>
                 </button>
 
