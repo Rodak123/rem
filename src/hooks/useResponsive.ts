@@ -14,7 +14,6 @@ const useMediaQuery = (query: string): boolean => {
     return matches;
 };
 
-
 interface Responsive {
     isMobile: boolean;
     isTablet: boolean;
@@ -22,7 +21,12 @@ interface Responsive {
 }
 
 /**
- * Provides information about the current screen size
+ * Provides information about the current screen size.
+ * 
+ * Sizes [px]:
+ * - mobile: ...639
+ * - tablet: 640...1023
+ * - desktop: 1024...
  */
 export const useResponsive = (): Responsive => {
     const isMobile = useMediaQuery("(max-width: 639px)");

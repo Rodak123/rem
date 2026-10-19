@@ -20,7 +20,7 @@ interface AlbumSectionProps {
 export const AlbumSection: React.FC<AlbumSectionProps> = ({ album }) => {
     const playerInfo = usePlayerInfo();
 
-    // ToDo: Replace with actual song and disk fetching from the album
+    // TODO: Replace with actual song and disk fetching from the album
     const debugTrack: Track = playerInfo.track ?? {
         id: "1",
         author: ['Author'],

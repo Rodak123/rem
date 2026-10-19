@@ -6,6 +6,9 @@ interface PlayPauseButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElem
     size: 'large' | 'normal';
 }
 
+/**
+ * Circular Play / Pause button used by players.
+ */
 export const PlayPauseButton: React.FC<PlayPauseButtonProps> = ({ isPlaying, size, disabled = false, className, ...props }) => {
     const iconSize = size === 'normal' ? 20 : 40;
     return (

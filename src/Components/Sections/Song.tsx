@@ -41,6 +41,7 @@ export const Song = () => {
                     className="block min-w-0 w-full truncate text-3xl md:text-5xl lg:text-7xl font-medium leading-tight"
                 >
                     {playerInfo.track?.title ?? "Nothing playing..."}
+                    {/* TODO: Truncate should be replaced by scrolling text */}
                 </span>
                 <span className="block min-w-0 w-full truncate text-center text-1xl md:text-3xl lg:text-5xl font-light leading-tight">
                     {album}

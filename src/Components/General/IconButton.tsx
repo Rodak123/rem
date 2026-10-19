@@ -7,6 +7,9 @@ interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> 
     buttonSize?: 'large' | 'small';
 }
 
+/**
+ * General button that uses a react icon.
+ */
 export const IconButton: React.FC<IconButtonProps> = ({ icon: Icon, iconSize = 40, buttonSize = 'large', disabled = false, ...props }) => {
     return (
         <button

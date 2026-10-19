@@ -43,7 +43,7 @@ const SongListItem: React.FC<SongListItemProps> = ({ listProps, index, toggleMen
                 <p className="hidden group-hover:block"><IoPlay size={20} /></p>
             </div>
             <div className="grow flex flex-col min-w-0">
-                {/* ToDo: Truncate should be replaced by scrolling text */}
+                {/* TODO: Truncate should be replaced by scrolling text */}
                 <p className="text-lg truncate">
                     {song.title}
                 </p>
