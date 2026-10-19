@@ -175,13 +175,10 @@ async fn resolve_missing_tracks(
         };
 
         if let Some(old_hash) = old_t.hash {
-            let need_hash: Vec<(usize, PathBuf)> = fg
-                .values()
-                .filter(|v| v.len() > 1)
-                .flatten()
-                .copied()
-                .filter(|&i| tracks[i].hash.is_none())
-                .map(|i| (i, tracks[i].path.clone()))
+            let need_hash: Vec<(usize, PathBuf)> = idxs
+                .iter()
+                .filter(|i| tracks[**i].hash.is_none())
+                .map(|i| (*i, tracks[*i].path.clone()))
                 .collect();
             let computed: Vec<(usize, Option<u64>)> = tokio::task::spawn_blocking(move || {
                 need_hash

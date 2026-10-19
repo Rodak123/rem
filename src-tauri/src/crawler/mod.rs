@@ -106,7 +106,9 @@ pub fn db_update(directories: Vec<PathBuf>, db: Arc<DB>) {
                 report.merge(r);
             }
         }
-        sync_tracks(report, Arc::clone(&known), Arc::clone(&db)).await?;
+        if !report.tracks.is_empty() {
+            sync_tracks(report, Arc::clone(&known), Arc::clone(&db)).await?;
+        }
         Ok::<(), anyhow::Error>(())
     });
 }
