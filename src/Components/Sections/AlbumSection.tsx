@@ -7,6 +7,8 @@ import { AlbumPreview } from '../General/AlbumPreview';
 import { SongList } from '../General/SongList';
 import { CreatorLink } from '../General/ArtistLink';
 import { MdPlaylistAdd } from 'react-icons/md';
+import { useEffect, useState } from 'react';
+import { invoke } from '@tauri-apps/api/core';
 
 interface AlbumSectionProps {
     album: Album;
@@ -14,39 +16,34 @@ interface AlbumSectionProps {
 
 /**
  * This is the Album view/tab/page/section.
- * 
+ *
  * Right now album actions buttons are still missing, I'm not sure where to place them nicely
- * to not make it awkward to interact with on mobile with a single hand. 
+ * to not make it awkward to interact with on mobile with a single hand.
  */
 export const AlbumSection: React.FC<AlbumSectionProps> = ({ album }) => {
     const playerInfo = usePlayerInfo();
 
-    // ToDo: Replace with actual song and disk fetching from the album
-    const debugTrack: Track = playerInfo.track ?? {
-        id: "1",
-        author: ['Author'],
-        comment: 'comment',
-        diskNumber: 1,
-        duration: 140,
-        if_favorite: false,
-        path: '/Music/song.mp3',
-        title: 'Crazy Song',
-        cover: undefined,
-    };
-
     const disks: AlbumDisk[] = new Array(4).fill(0)
         .map((_, i, disks): AlbumDisk => ({ number: i + 1, trackCount: Math.floor(album.trackCount / disks.length) }));
-    const songs: Track[] = new Array(album.trackCount).fill(0)
-        .map((_, i) => ({
-            ...debugTrack,
-            author: ["Author 1", "Author 2"],
-            diskNumber: Math.floor(i / album.trackCount * disks.length) + 1
-        }));
+    const [debugTracks, setDebugTracks] = useState<Track[]>([]);
+    useEffect(() => {
+        const process = async () => {
+            const d: Track[] = await invoke("get_all_tracks");
+            const songs: Track[] = new Array(d.length).fill(0)
+                .map((_, i) => ({
+                    ...d[i],
+                    author: ["Author 1", "Author 2"],
+                    diskNumber: Math.floor(i / d.length * disks.length) + 1
+                }));
+            setDebugTracks(songs);
+        };
+        process();
+    }, []);
 
-    const totalDurationSeconds = songs.reduce((total, { duration }) => total + duration, 0);
+    const totalDurationSeconds = debugTracks.reduce((total, { duration }) => total + duration, 0);
 
     return (
-        <div className="p-3 flex justify-between max-md:flex-col md:flex-row gap-4 relative">
+        <div className="bg-background p-3 flex justify-between max-md:flex-col md:flex-row gap-4 relative">
             <div className="flex flex-col md:sticky md:top-15 h-min">
                 <div>
                     <h1
@@ -104,22 +101,23 @@ export const AlbumSection: React.FC<AlbumSectionProps> = ({ album }) => {
             </div>
             <SongList
                 isReorderable
-                songs={songs}
-                onSongClicked={(index) => {
+                songs={debugTracks}
+                onSongClicked={(idx) => {
                     // Replaced with actual logic
-                    console.log(`Play album id:${album.id} from song id:${songs[index].id}`);
+                    console.log(`Play album id:${album.id} from song id:${debugTracks[idx].id}`);
+                    playerInfo.actions.loadSong(debugTracks[idx].path, true);
                 }}
                 menuOptions={[
                     {
                         name: 'Add to...',
                         icon: (<MdPlaylistAdd size={20} />),
                         onClick: (index: number) => {
-                            console.log(`Add song ${songs[index]} to...`);
+                            console.log(`Add song ${debugTracks[index]} to...`);
                             console.error('Not implemented yet >:O');
                         }
                     },
                 ]}
-                className="w-full md:max-w-1/2 pb-[125px] z-5"
+                className="w-full md:max-w-1/2 pb-31.25 z-5"
             /**
              * 125px is based on the MiniPlayer height and some spacing,
              * I'm not sure how to have this dynamic

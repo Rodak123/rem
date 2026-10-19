@@ -79,6 +79,7 @@ fn crawl<P: AsRef<Path>>(directory: P, known: &HashMap<PathBuf, Track>) -> Resul
 /// Rn the checker is really bad
 pub fn db_update(directories: Vec<PathBuf>, db: Arc<DB>) {
     tauri::async_runtime::spawn(async move {
+        let now = Instant::now();
         let known: Arc<HashMap<PathBuf, Track>> = match db.track_all().await {
             Ok(v) => Arc::new(v.into_iter().map(|t| (t.path.clone(), t)).collect()),
             Err(e) => {
@@ -109,6 +110,7 @@ pub fn db_update(directories: Vec<PathBuf>, db: Arc<DB>) {
         if !report.tracks.is_empty() {
             sync_tracks(report, Arc::clone(&known), Arc::clone(&db)).await?;
         }
+        eprintln!("DB update ended after in {:.2?}", now.elapsed());
         Ok::<(), anyhow::Error>(())
     });
 }
