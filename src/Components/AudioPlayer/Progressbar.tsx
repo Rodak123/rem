@@ -3,7 +3,7 @@ import "../../css/progressBar.css";
 import { cn, formatDuration } from '../../lib/utils';
 import { useTabs } from '../../hooks';
 
-interface ProgressBarProps extends React.HTMLAttributes<HTMLDivElement> {
+interface ProgressBarProps extends React.ComponentProps<"div"> {
     current: number;
     duration: number;
     onSeek: (seconds: number) => void;

@@ -1,7 +1,7 @@
 import { FaHome } from 'react-icons/fa';
 import { cn } from '../../lib/utils';
 
-interface AppLogoProps extends React.HTMLAttributes<HTMLDivElement> { }
+interface AppLogoProps extends React.ComponentProps<"div"> { }
 
 export const AppLogo: React.FC<AppLogoProps> = ({ ...props }) => {
     const { className } = props;

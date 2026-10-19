@@ -99,7 +99,7 @@ export interface SongListItemMenuOption {
     onClick: (index: number) => void;
 }
 
-interface SongListProps extends React.HTMLAttributes<HTMLDivElement> {
+interface SongListProps extends React.ComponentProps<"div"> {
     songs: Track[];
     onSongClicked: (index: number) => void;
 

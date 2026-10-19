@@ -8,6 +8,7 @@ import { IconButton } from '../General/IconButton';
 import { usePlayerInfo, useResponsive } from '../../hooks';
 import { vt } from '../../lib/utils';
 import { IoIosHeart, IoIosHeartEmpty } from 'react-icons/io';
+import { AutoScrolled } from '../General/AutoScrolled';
 
 /**
     This component is for showing the currently played song in fullscreen.
@@ -27,6 +28,8 @@ export const Song = () => {
 
     const noSongSelected = playerInfo.track === null;
 
+    const playingTitle = playerInfo.track?.title ?? "Nothing playing...";
+
     return (
         <div className="flex items-center justify-center flex-col w-full grow p-3 gap-6">
             <div {...vt("player-vinyl", "Song")}>
@@ -35,15 +38,29 @@ export const Song = () => {
                     spinning={playerInfo.playerState.playing}
                     className="max-[350px]:w-50 max-[450px]:w-60 max-[600px]:w-80 w-110" />
             </div>
-            <div className="min-w-0 max-w-full">
-                <span
+            <div
+                {...vt("player-title", "Song")}
+                className="min-w-0 max-w-full flex flex-col justify-center"
+            >
+                <AutoScrolled
+                    element={(
+                        <p
+                            {...vt("player-title", "Song")}
+                            className="text-3xl md:text-4xl lg:text-5xl text-center font-medium leading-tight"
+                        >
+                            {playingTitle}
+                        </p>
+                    )}
+                    animation='loop'
+                    className="w-full"
+                />
+                {/* <span
                     {...vt("player-title", "Song")}
                     className="block min-w-0 w-full truncate text-3xl md:text-5xl lg:text-7xl font-medium leading-tight"
                 >
                     {playerInfo.track?.title ?? "Nothing playing..."}
-                    {/* TODO: Truncate should be replaced by scrolling text */}
-                </span>
-                <span className="block min-w-0 w-full truncate text-center text-1xl md:text-3xl lg:text-5xl font-light leading-tight">
+                </span> */}
+                <span className="block min-w-0 w-full truncate text-center text-1xl md:text-2xl lg:text-3xl font-light leading-tight">
                     {album}
                 </span>
             </div>

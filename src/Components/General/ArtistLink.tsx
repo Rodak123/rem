@@ -1,6 +1,6 @@
 import { cn } from '../../lib/utils';
 
-interface CreatorLinkProps extends React.HTMLAttributes<HTMLParagraphElement> {
+interface CreatorLinkProps extends React.ComponentProps<"div"> {
     creatorId: number;
 }
 

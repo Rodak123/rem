@@ -1,7 +1,7 @@
 import { CSSProperties } from 'react';
 import { cn } from '../../lib/utils';
 
-interface VinylDiskProps extends React.HTMLAttributes<HTMLDivElement> {
+interface VinylDiskProps extends React.ComponentProps<"div"> {
     coverArt?: string;
     spinning?: boolean;
     spinDelay?: CSSProperties['animationDelay'];

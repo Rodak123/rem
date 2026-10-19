@@ -11,7 +11,7 @@ export const Home = ({ albums }: { albums: Album[]; }) => {
     useEffect(() => {
         const process = async () => {
             const d: Track[] = await invoke("get_all_tracks");
-            setData(d);
+            setData(d.slice(0, 10));
         };
         process();
     }, []);
