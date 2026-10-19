@@ -1,11 +1,13 @@
 import { Vinyl } from "./../AudioPlayer/Vinyl";
 import { MdOutlineSkipNext, MdOutlineSkipPrevious, } from "react-icons/md";
-import { IoPause, IoPlay } from "react-icons/io5";
 import { ProgressBar } from "./../AudioPlayer/Progressbar";
-import { MuteVolumeBtn } from "../AudioPlayer/MuteVolumeBtn";
-import { usePlayerInfo } from '../../hooks/usePlayerInfo';
-import { vt } from "../../lib/viewTransition";
+import { MuteVolumeButton } from "../AudioPlayer/Controls/MuteVolumeButton";
 import { CreatorLink } from '../General/ArtistLink';
+import { PlayPauseButton } from '../AudioPlayer/Controls/PlayPauseButton';
+import { IconButton } from '../General/IconButton';
+import { usePlayerInfo, useResponsive } from '../../hooks';
+import { vt } from '../../lib/utils';
+import { IoIosHeart, IoIosHeartEmpty } from 'react-icons/io';
 
 /**
     This component is for showing the currently played song in fullscreen.
@@ -15,25 +17,41 @@ import { CreatorLink } from '../General/ArtistLink';
 export const Song = () => {
     //Loads all the data from App.tsx. When something changes there, this little guy will know.
     const playerInfo = usePlayerInfo();
+    const { isMobile } = useResponsive();
+
+    // Testing temporary data
+    const album = "Some Album";
+    if (playerInfo.track !== null) {
+        playerInfo.track!.author = ["Author 1", "Author 2"];
+    }
+
+    const noSongSelected = playerInfo.track === null;
 
     return (
-        <div className="flex items-center justify-center flex-col w-full">
-            <div className="flex items-center justify-center flex-col
-            gap-6">
-                <div {...vt("player-vinyl", "Song")}>
-                    <Vinyl progress={playerInfo.playerState.progress}
-                        track={playerInfo.track}
-                        spinning={playerInfo.playerState.playing}
-                        className="max-[350px]:w-50 max-[450px]:w-60 max-[600px]:w-80 w-110" />
-                </div>
-                <span className="min-w-0">
-                    <span
-                        {...vt("player-title", "Song")}
-                        className="block truncate text-7xl
-                    font-medium leading-tight">{playerInfo.track?.title ?? "Nothing playing..."}</span>
-                    <span
+        <div className="flex items-center justify-center flex-col w-full grow p-3 gap-6">
+            <div {...vt("player-vinyl", "Song")}>
+                <Vinyl progress={playerInfo.playerState.progress}
+                    track={playerInfo.track}
+                    spinning={playerInfo.playerState.playing}
+                    className="max-[350px]:w-50 max-[450px]:w-60 max-[600px]:w-80 w-110" />
+            </div>
+            <div className="min-w-0 max-w-full">
+                <span
+                    {...vt("player-title", "Song")}
+                    className="block min-w-0 w-full truncate text-3xl md:text-5xl lg:text-7xl font-medium leading-tight"
+                >
+                    {playerInfo.track?.title ?? "Nothing playing..."}
+                </span>
+                <span className="block min-w-0 w-full truncate text-center text-1xl md:text-3xl lg:text-5xl font-light leading-tight">
+                    {album}
+                </span>
+            </div>
+            <div className="grow" />
+            <div className="w-full flex flex-col gap-2">
+                <div className="w-full flex items-center">
+                    <div
                         {...vt("player-author", "Song")}
-                        className="flex gap-2">
+                        className="w-full flex gap-2">
                         {playerInfo.track?.author?.map((_, index) => {
                             // This will pass the song author id instead
                             const creatorId = index;
@@ -43,9 +61,17 @@ export const Song = () => {
                                 className="text-lg text-muted"
                             />;
                         })}
-                    </span>
-                </span>
-                <MuteVolumeBtn />
+                    </div>
+                    <div className="grow" />
+                    <div>
+                        <IconButton
+                            buttonSize='small'
+                            title={playerInfo.track?.if_favorite ? "Unfavorite" : "Favorite"}
+                            icon={playerInfo.track?.if_favorite ? IoIosHeart : IoIosHeartEmpty}
+                            iconSize={20}
+                        />
+                    </div>
+                </div>
                 <div className="w-full"
                     {...vt("progress-bar", "Song")}>
                     <ProgressBar current={playerInfo.playerState.progress}
@@ -53,25 +79,31 @@ export const Song = () => {
                         onSeek={playerInfo.actions.setSeek}
                         className="stretch" />
                 </div>
-                <div className="flex items-center gap-4">
-                    <button>
-                        <MdOutlineSkipPrevious size={40} />
-                    </button>
-                    <button
+            </div>
+            <div className="w-full flex">
+                <div className="w-1/4 flex justify-center items-center">
+                    <MuteVolumeButton isHorizontal={!isMobile} />
+                </div>
+                <div className="w-2/4 flex justify-center items-center gap-4">
+                    <IconButton
+                        icon={MdOutlineSkipPrevious}
+                        iconSize={40}
+                    />
+                    <PlayPauseButton
+                        size="large"
+                        isPlaying={playerInfo.playerState.playing}
                         onClick={playerInfo.actions.togglePlay}
-                        aria-label={playerInfo.playerState.playing ? "Pause (P)" : "Play (P)"}
-                        title={playerInfo.playerState.playing ? "Pause (P)" : "Play (P)"}
-                        className="grid size-15 shrink-0 cursor-pointer place-items-center rounded-full
-                        border border-foreground/40 transition-colors hover:bg-hover-bg"
-                        {...vt("play-pause-btn", "Song")}>
-                        {playerInfo.playerState.playing ? <IoPause size={40} /> : <IoPlay size={40} />}
-                    </button>
-                    <button>
-                        <MdOutlineSkipNext size={40} />
-                    </button>
+                        disabled={noSongSelected}
+                        {...vt("play-pause-btn", "Song")}
+                    />
+                    <IconButton
+                        icon={MdOutlineSkipNext}
+                        iconSize={40}
+                    />
+                </div>
+                <div className="w-1/4 flex justify-center items-center">
                 </div>
             </div>
-
         </div>
     );
 };

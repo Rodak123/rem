@@ -1,6 +1,5 @@
 import { Album } from '../../lib/types/audioTypes';
-import { cn } from '../../lib/utils';
-import { vt } from '../../lib/viewTransition';
+import { cn, vt } from '../../lib/utils';
 
 interface AlbumPreviewProps extends React.HTMLAttributes<HTMLDivElement> {
     album: Album;

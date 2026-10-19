@@ -4,6 +4,7 @@ import { cn } from '../../lib/utils';
 import { CreatorLink } from './ArtistLink';
 import { BsThreeDotsVertical } from 'react-icons/bs';
 import { useState } from 'react';
+import { IconType } from 'react-icons';
 
 interface SongListItemProps {
     listProps: SongListProps;
@@ -70,17 +71,17 @@ const SongListItem: React.FC<SongListItemProps> = ({ listProps, index, toggleMen
                             // This menu is far from final
                             // The options are probably going to be passed by the
                             <div className="absolute z-3 top-2 right-2 w-40 py-3 rounded bg-background border border-foreground/30 flex flex-col gap-2">
-                                {menuOptions.map((option) => (
+                                {menuOptions.map(({ name, onClick, icon: Icon }) => (
                                     <div
                                         className='flex gap-2 px-4 py-1 items-center hover:bg-background-light/20'
-                                        title={option.name}
+                                        title={name}
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            option.onClick(index);
+                                            onClick(index);
                                         }}
                                     >
-                                        {option.icon}
-                                        <p>{option.name}</p>
+                                        <Icon size={20} />
+                                        <p>{name}</p>
                                     </div>
                                 ))}
                             </div>
@@ -94,7 +95,7 @@ const SongListItem: React.FC<SongListItemProps> = ({ listProps, index, toggleMen
 
 export interface SongListItemMenuOption {
     name: string;
-    icon: React.ReactNode;
+    icon: IconType;
     onClick: (index: number) => void;
 }
 

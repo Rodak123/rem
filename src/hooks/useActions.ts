@@ -1,10 +1,10 @@
 import { invoke } from "@tauri-apps/api/core";
 import { PlayerActions, PlayerState } from "../lib/playerActions";
 import { Dispatch, SetStateAction } from "react";
-import { withTransition } from "../lib/viewTransition";
 import { useShortcuts } from "./useShortcuts";
 import { useTabs } from './useTabs';
 import { Album, Track } from '../lib/types/audioTypes';
+import { withTransition } from '../lib/utils';
 
 /**
  * Handles all input that happens during the runtime
@@ -50,8 +50,8 @@ export const useActions = (
                     setPlayerState(s => s.play());
                     invoke("toggle");
                 }
-            }
-            process()
+            };
+            process();
         },
         pressShuffle: () => { /* This is going to be little longer
             cuz it requires also saving the state before shuffle*/ },

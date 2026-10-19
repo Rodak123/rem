@@ -1,9 +1,9 @@
 import { invoke } from '@tauri-apps/api/core';
-import { usePlayerInfo } from '../../hooks/usePlayerInfo';
 import { Album, Track } from "../../lib/types/audioTypes";
-import { withTransition } from '../../lib/viewTransition';
 import { AlbumPreview } from '../General/AlbumPreview';
 import { useEffect, useState } from 'react';
+import { usePlayerInfo } from '../../hooks';
+import { withTransition } from '../../lib/utils';
 
 export const Home = ({ albums }: { albums: Album[]; }) => {
     const playerInfo = usePlayerInfo();

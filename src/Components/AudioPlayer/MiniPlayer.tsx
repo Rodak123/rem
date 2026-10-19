@@ -1,11 +1,10 @@
-import { IoPause, IoPlay } from "react-icons/io5";
 import { Vinyl } from "./Vinyl";
-import { useSwipe } from "../../hooks/useSwipe";
 import { ProgressBar } from "./Progressbar";
-import { vt, withTransition } from "../../lib/viewTransition";
-import { MuteVolumeBtn } from "./MuteVolumeBtn";
-import { usePlayerInfo } from '../../hooks/usePlayerInfo';
+import { MuteVolumeButton } from "./Controls/MuteVolumeButton";
 import { CreatorLink } from '../General/ArtistLink';
+import { PlayPauseButton } from './Controls/PlayPauseButton';
+import { usePlayerInfo, useSwipe } from '../../hooks';
+import { vt, withTransition } from '../../lib/utils';
 
 export const MiniPlayer = () => {
     const miniPlayerInfo = usePlayerInfo();
@@ -13,6 +12,8 @@ export const MiniPlayer = () => {
     const expand = () => withTransition(miniPlayerInfo.actions.setSong, "Song");
     // Swipe up (or tap) on the vinyl / title area pulls the full player up
     const swipe = useSwipe({ onUp: miniPlayerInfo.actions.setSong });
+
+    const noSongSelected = miniPlayerInfo.track === null;
 
     return (
         <div
@@ -63,28 +64,25 @@ export const MiniPlayer = () => {
                     </span>
                 </button>
 
-                <MuteVolumeBtn />
+                <MuteVolumeButton isHorizontal={false} />
 
-                <button
+                <PlayPauseButton
+                    size="normal"
+                    isPlaying={miniPlayerInfo.playerState.playing}
                     onClick={miniPlayerInfo.actions.togglePlay}
-                    aria-label={miniPlayerInfo.playerState.playing
-                        ? "Pause (P)" : "Play (P)"}
-                    title={miniPlayerInfo.playerState.playing
-                        ? "Pause (P)" : "Play (P)"}
-                    className="grid size-11 shrink-0 cursor-pointer
-                    place-items-center rounded-full border
-                    border-foreground/40 transition-colors
-                    hover:bg-hover-bg"
+                    disabled={noSongSelected}
                     {...vt("play-pause-btn", "Song")}
-                >
-                    {miniPlayerInfo.playerState.playing ? <IoPause size={20} /> : <IoPlay size={20} />}
-                </button>
+                />
             </div>
 
             <div {...vt("progress-bar", "Song")}>
-                <ProgressBar current={miniPlayerInfo.playerState.progress}
+                <ProgressBar
+                    current={miniPlayerInfo.playerState.progress}
                     duration={miniPlayerInfo.track?.duration ?? 0}
-                    onSeek={miniPlayerInfo.actions.setSeek} className="mt-3" />
+                    onSeek={miniPlayerInfo.actions.setSeek}
+                    className="mt-3"
+                    disabled={noSongSelected}
+                />
             </div>
         </div>
     );

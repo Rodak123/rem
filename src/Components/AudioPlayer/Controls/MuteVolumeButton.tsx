@@ -1,22 +1,22 @@
 import { MdVolumeDown, MdVolumeOff, MdVolumeUp } from "react-icons/md";
-import { isMobile } from "../../lib/mobileCheck";
-import "../../css/volumeBar.css";
-import { useTabs } from '../../hooks/useTabs';
-import { usePlayerInfo } from '../../hooks/usePlayerInfo';
-import { vt } from "../../lib/viewTransition";
+import "../../../css/volumeBar.css";
+import { usePlayerInfo } from '../../../hooks';
+import { isMobile, vt } from '../../../lib/utils';
+
+interface MuteVolumeButtonProps {
+    isHorizontal: boolean;
+}
 
 /**
 * This button is primarily meant for computers
 * For phones it doesn't make much sense because you usually don't change
 * sound of app but more likely you change the global sound
 */
-export const MuteVolumeBtn = () => {
-    const { currentTab } = useTabs();
+export const MuteVolumeButton: React.FC<MuteVolumeButtonProps> = ({ isHorizontal }) => {
     const { playerState, actions } = usePlayerInfo();
 
     if (isMobile()) return null;
 
-    const horizontal = currentTab.type === "Song";
     const shown = playerState.muted ? 0 : playerState.volume;
     const percent = Math.round(shown * 100);
     const Icon = shown === 0 ? MdVolumeOff : shown < 0.5 ? MdVolumeDown : MdVolumeUp;
@@ -51,7 +51,7 @@ export const MuteVolumeBtn = () => {
                 <Icon size={30} />
             </button>
 
-            {horizontal ? (
+            {isHorizontal ? (
                 <div className="ml-3 w-28">{slider}</div>
             ) : (
                 <div
@@ -66,7 +66,7 @@ export const MuteVolumeBtn = () => {
                     rounded-full bg-background-dark shadow-lg
                     ring-1 ring-foreground/20">
                         <div className="absolute left-1/2 top-1/2 w-24
-                        -translate-x-1/2 -translate-y-1/2 -rotate-90">
+                        -translate-x-1/2 -translate-y-1/2 -rotate-90 flex items-center justify-center">
                             {slider}
                         </div>
                     </div>

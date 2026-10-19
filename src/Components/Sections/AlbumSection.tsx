@@ -1,12 +1,11 @@
-import { usePlayerInfo } from '../../hooks/usePlayerInfo';
 import { Album, AlbumDisk, Track } from '../../lib/types/audioTypes';
-import { cn, formatDuration } from '../../lib/utils';
-import { vt } from '../../lib/viewTransition';
+import { cn, formatDuration, vt } from '../../lib/utils';
 import { VinylDisk } from '../AudioPlayer/VinylDisk';
 import { AlbumPreview } from '../General/AlbumPreview';
 import { SongList } from '../General/SongList';
 import { CreatorLink } from '../General/ArtistLink';
 import { MdPlaylistAdd } from 'react-icons/md';
+import { usePlayerInfo } from '../../hooks';
 
 interface AlbumSectionProps {
     album: Album;
@@ -112,7 +111,7 @@ export const AlbumSection: React.FC<AlbumSectionProps> = ({ album }) => {
                 menuOptions={[
                     {
                         name: 'Add to...',
-                        icon: (<MdPlaylistAdd size={20} />),
+                        icon: MdPlaylistAdd,
                         onClick: (index: number) => {
                             console.log(`Add song ${songs[index]} to...`);
                             console.error('Not implemented yet >:O');

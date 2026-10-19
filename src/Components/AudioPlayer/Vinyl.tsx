@@ -39,7 +39,7 @@ export const Vinyl = ({ spinning, className, track, progress }: VinylProps) => {
 
     return (
         <div className={`relative shrink-0 ${className}`}>
-            <VinylDisk coverArt={coverUrl} spinning={spinning} spinDelay={spinDelay} id="true" />
+            <VinylDisk coverArt={coverUrl} spinning={angle !== targetAngle} spinDelay={spinDelay} id="true" />
 
             <div
                 className="absolute z-1 pointer-events-none"
