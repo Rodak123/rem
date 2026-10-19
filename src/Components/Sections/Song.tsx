@@ -47,8 +47,8 @@ export const Song = () => {
                 </span>
             </div>
             <div className="grow" />
-            <div className="w-full flex flex-col gap-2">
-                <div className="w-full flex items-center">
+            <div className="w-full flex flex-col items-stretch gap-2 px-5 lg:px-10">
+                <div className="flex items-center">
                     <div
                         {...vt("player-author", "Song")}
                         className="w-full flex gap-2">
@@ -72,7 +72,7 @@ export const Song = () => {
                         />
                     </div>
                 </div>
-                <div className="w-full"
+                <div
                     {...vt("progress-bar", "Song")}>
                     <ProgressBar current={playerInfo.playerState.progress}
                         duration={playerInfo.track?.duration ?? 0}

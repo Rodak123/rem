@@ -9,6 +9,8 @@ const ARM_END_ANGLE = 30;
 const ARM_REST_ANGLE = 0;
 const MIN_ANGLE_STEP = 1;
 
+const TRANSITION_TIME_MS = 800;
+
 export const Vinyl = ({ spinning, className, track, progress }: VinylProps) => {
     const duration = track?.duration ?? 0;
     const ratio = duration > 0 && Number.isFinite(progress)
@@ -17,14 +19,18 @@ export const Vinyl = ({ spinning, className, track, progress }: VinylProps) => {
     const targetAngle = spinning
         ? ARM_START_ANGLE + (ARM_END_ANGLE - ARM_START_ANGLE) * ratio
         : ARM_REST_ANGLE;
+
     const [angle, setAngle] = useState(targetAngle);
+
     useEffect(() => {
         setAngle(prev =>
             Math.abs(targetAngle - prev) > MIN_ANGLE_STEP ? targetAngle : prev
         );
-    }, [targetAngle]);
+    }, [targetAngle, progress]);
+
     const [spinDelay] = useState(() => `-${performance.now() % 6000}ms`);
     const [coverUrl, setCoverUrl] = useState<string | undefined>(undefined);
+
     useEffect(() => {
         if (!track || !track.cover) {
             setCoverUrl(undefined);
@@ -37,10 +43,28 @@ export const Vinyl = ({ spinning, className, track, progress }: VinylProps) => {
         return () => URL.revokeObjectURL(url);
     }, [track, track?.cover]);
 
+    const [vinylCanSpin, setVinylCanSpin] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (!spinning) {
+            setVinylCanSpin(false);
+            return;
+        }
+
+        const id = setTimeout(() => {
+            setVinylCanSpin(true);
+        }, TRANSITION_TIME_MS);
+
+        return () => {
+            clearTimeout(id);
+        };
+    }, [spinning]);
+
+    // const vinylCanSpin = spinning && Math.abs(angle - targetAngle) < MIN_ANGLE_STEP;
+
     return (
         <div className={`relative shrink-0 ${className}`}>
-            <VinylDisk coverArt={coverUrl} spinning={angle !== targetAngle} spinDelay={spinDelay} id="true" />
-
+            <VinylDisk coverArt={coverUrl} spinning={vinylCanSpin} spinDelay={spinDelay} id="true" />
             <div
                 className="absolute z-1 pointer-events-none"
                 style={{
@@ -50,7 +74,7 @@ export const Vinyl = ({ spinning, className, track, progress }: VinylProps) => {
                     height: "95%",
                     transformOrigin: "50% 8%",
                     transform: `rotate(${angle}deg)`,
-                    transition: "transform 0.8s ease-in-out",
+                    transition: `transform ${TRANSITION_TIME_MS}ms ease-in-out`
                 }}
             >
                 {/* Pivot base */}
