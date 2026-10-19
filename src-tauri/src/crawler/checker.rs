@@ -7,7 +7,7 @@ use crate::{
     structs::audio::track::Track,
     utils::scorer::new_tracks::most_common,
 };
-use std::{collections::HashMap, path::PathBuf, sync::Arc};
+use std::{collections::HashMap, path::PathBuf, sync::Arc, time::Instant};
 
 fn group_by_fingerprint(tracks: &[Track]) -> HashMap<u64, Vec<usize>> {
     let mut m: HashMap<u64, Vec<usize>> = HashMap::with_capacity(tracks.len());
@@ -30,10 +30,13 @@ pub async fn sync_tracks(
 
     // DON'T update with ids from reports. Rn All of them has id = 0
     // Only known has correct ids
-    eprintln!("Deduping...");
+    let now = Instant::now();
     dedupe_found_tracks(&mut tracks, Arc::clone(&db)).await?;
-    eprintln!("Resolving missing track");
+    eprintln!("Removing duplicate tracks in {:.2?}", now.elapsed());
+
+    let now = Instant::now();
     resolve_missing_tracks(&mut tracks, Arc::clone(&known), Arc::clone(&db)).await?;
+    eprintln!("Resolving missing tracks in {:.2?}", now.elapsed());
 
     let changed: Vec<_> = tracks
         .into_iter()
@@ -41,8 +44,10 @@ pub async fn sync_tracks(
         .collect();
     if !changed.is_empty() {
         eprintln!("Have to insert/update");
+        let now = Instant::now();
         // It's using upsert so you can just do this
         db.track_insert_many(&changed).await?;
+        eprintln!("UPSERT into DB in {:.2?}", now.elapsed());
     } else {
         eprintln!("Nothing new");
     }
