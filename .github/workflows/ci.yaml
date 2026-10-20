@@ -1,0 +1,37 @@
+name: CI test build
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+
+jobs:
+    test-build:
+        name: test-build
+        runs-on: "ubuntu-22.04"
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Install packages
+              shell: bash
+              run: ci/ubuntu-install-packages
+
+            - name: Install bun
+              uses: oven-sh/setup-bun@v2
+
+            - name: Setup rust-toolchain stable
+              uses: dtolnay/rust-toolchain@stable
+
+            - name: Test frontend
+              shell: bash
+              run: |
+                  bun install
+                  bun tsc
+                  bun vite build
+
+            - name: Cargo test
+              run: |
+                  cd src-tauri
+                  cargo test
