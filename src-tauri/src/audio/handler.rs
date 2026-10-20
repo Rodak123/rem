@@ -62,6 +62,9 @@ impl AudioHandler {
                                 player = rodio::Player::connect_new(device.mixer());
                                 if let Ok(opts) = opts.lock() {
                                     player.set_volume(opts.volume);
+                                    if opts.muted {
+                                        player.set_volume(0.0);
+                                    }
                                 }
                                 player.pause();
 

@@ -78,4 +78,25 @@ impl DB {
         .await?;
         Ok(rows.into_iter().map(Track::from).collect())
     }
+
+    pub async fn track_exists_by_path<P: AsRef<Path>>(&self, path: P) -> Result<bool> {
+        let row: Option<(i64,)> = sqlx::query_as("SELECT id FROM track WHERE path = ? LIMIT 1")
+            .bind(path.as_ref().to_string_lossy())
+            .fetch_optional(&self.pool)
+            .await?;
+        Ok(row.is_some())
+    }
+
+    pub async fn get_path_by_hash_of_fingerprint(
+        &self,
+        fingerprint: u64,
+        hash: Option<u64>,
+    ) -> Result<Option<Track>> {
+        let row = sqlx::query_as::<_, TrackRow>(select_track!("WHERE fingerprint = ? OR hash = ?"))
+            .bind(fingerprint as i64)
+            .bind(hash.and_then(|h| Some(h as i64)))
+            .fetch_optional(&self.pool)
+            .await?;
+        Ok(row.map(Track::from))
+    }
 }
