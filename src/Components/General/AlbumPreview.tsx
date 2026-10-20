@@ -1,8 +1,7 @@
 import { Album } from '../../lib/types/audioTypes';
-import { cn } from '../../lib/utils';
-import { vt } from '../../lib/viewTransition';
+import { cn, vt } from '../../lib/utils';
 
-interface AlbumPreviewProps extends React.HTMLAttributes<HTMLDivElement> {
+interface AlbumPreviewProps extends React.ComponentProps<"div"> {
     album: Album;
     showTitle?: boolean;
     onClick?: () => void;

@@ -1,6 +1,6 @@
-import { usePlayerInfo } from '../../hooks/usePlayerInfo';
-import { Album } from "../../lib/types/audioTypes";
-import { withTransition } from '../../lib/viewTransition';
+import { usePlayerInfo } from '../../hooks';
+import { Album } from '../../lib/types';
+import { withTransition } from '../../lib/utils';
 import { AlbumPreview } from '../General/AlbumPreview';
 
 export const Home = ({ albums }: { albums: Album[]; }) => {

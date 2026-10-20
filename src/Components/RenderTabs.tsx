@@ -6,7 +6,7 @@ import { Settings } from "./Sections/Settings";
 import { Song } from "./Sections/Song";
 import { SongQueue } from "./Sections/SongQueue";
 import { Album } from "../lib/types/audioTypes";
-import { useTabs } from '../hooks/useTabs';
+import { useTabs } from '../hooks';
 
 export const RenderTabs = ({ albums }: { albums: Album[]; }) => {
     const { currentTab } = useTabs();

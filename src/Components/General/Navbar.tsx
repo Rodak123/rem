@@ -3,9 +3,8 @@ import { Search } from "./Search";
 import { RiSimCardWarningFill } from "react-icons/ri";
 import { JSX, useEffect, useState } from "react";
 import { MdKeyboardArrowLeft } from "react-icons/md";
-import { useTabs } from '../../hooks/useTabs';
 import { AppLogo } from './AppLogo';
-import { usePlayerInfo } from '../../hooks/usePlayerInfo';
+import { usePlayerInfo, useTabs } from '../../hooks';
 
 type NavbarProps = {
     hasConflicts?: boolean;

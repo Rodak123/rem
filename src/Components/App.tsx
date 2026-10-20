@@ -7,9 +7,7 @@ import { PlayerState } from "../lib/playerActions";
 import { miniPlayerBlacklist } from "../lib/miniPlayerBlacklist";
 import { RenderTabs } from "./RenderTabs";
 import { CurrPlayingContext } from "../lib/contexts/globalContext";
-import { useActions } from "../hooks/useActions";
-import { useBackendListener } from "../hooks/useBackendListener";
-import { useTabs } from '../hooks/useTabs';
+import { useActions, useBackendListener, useTabs } from '../hooks';
 
 const ALBUMS: Album[] = Array.from({ length: 9 }, (_, i) => ({
     id: String(i + 1),
@@ -52,7 +50,7 @@ function App() {
             actions: actions,
         }}>
 
-            <main className="min-h-screen text-foreground bg-background">
+            <main className="min-h-screen text-foreground bg-background flex flex-col">
                 <Navbar />
                 <RenderTabs
                     albums={ALBUMS}
