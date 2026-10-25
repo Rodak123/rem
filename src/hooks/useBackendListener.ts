@@ -2,14 +2,15 @@ import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { PlayerState } from "../lib/playerActions";
-import { AudioOptions, AudioRealTimeInfo } from '../lib/types';
+import { AudioOptions, AudioRealTimeInfo, Track } from '../lib/types';
 
 /**
  * Well it's obvious right? Basically listens to events from backend.
  * Check out the AudioHandler in backend for better understanding.
 * */
 export const useBackendListener = (
-    setPlayerState: Dispatch<SetStateAction<PlayerState>>
+    setPlayerState: Dispatch<SetStateAction<PlayerState>>,
+    setCurrentTrack: Dispatch<SetStateAction<Track | null>>
 ) => {
     useEffect(() => {
         // Most likely backend will read some settings from
@@ -25,8 +26,10 @@ export const useBackendListener = (
         let previousPos = 0;
         const progress = listen<AudioRealTimeInfo>("audio-realtime", (e) => {
             const { position, finished } = e.payload;
-            if (finished)
+            if (finished) {
                 setPlayerState(s => s.setProgress(0).pause());
+                setCurrentTrack(null);
+            }
             else if (position !== previousPos) {
                 previousPos = position;
                 setPlayerState(s => s.setProgress(position));

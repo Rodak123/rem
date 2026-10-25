@@ -28,7 +28,8 @@ function App() {
     // const [hasConflicts] = useState(false);
 
     useBackendListener(
-        setPlayerState
+        setPlayerState,
+        setCurrentTrack
     );
 
     const actions = useActions(

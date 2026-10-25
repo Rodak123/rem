@@ -39,7 +39,6 @@ export const Song = () => {
                     className="max-[350px]:w-50 max-[450px]:w-60 max-[600px]:w-80 w-110" />
             </div>
             <div
-                {...vt("player-title", "Song")}
                 className="min-w-0 max-w-full flex flex-col justify-center"
             >
                 <AutoScrolled
@@ -51,7 +50,7 @@ export const Song = () => {
                             {playingTitle}
                         </p>
                     )}
-                    animation='loop'
+                    animation='ping-pong'
                     className="w-full"
                 />
                 {/* <span
