@@ -39,5 +39,5 @@ pub async fn load_track(
     db: State<'_, Arc<DB>>,
 ) -> tauri::Result<Option<Track>> {
     player.send(AudioRequest::Load(path.clone()))?;
-    Ok(db.track_get_by_path(&path).await?)
+    Ok(db.tracks().by_path(&path).await?)
 }

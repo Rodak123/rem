@@ -3,8 +3,7 @@ use crate::{
         commands::{getters::*, setters::*},
         handler::AudioHandler,
     },
-    crawler::db_update,
-    db::{DB, commands::setters::*},
+    db::{DB, commands::getters::*, updating::db_update},
 };
 use std::sync::Arc;
 use tauri::Manager;
@@ -30,7 +29,6 @@ pub fn run() {
 
             let db = Arc::new(tauri::async_runtime::block_on(async {
                 let db = DB::init(&app_data.join(DB_FILE)).await?;
-                db.track_init().await?;
                 anyhow::Ok(db)
             })?);
 
@@ -49,7 +47,8 @@ pub fn run() {
             set_mute,
             get_options,
             get_all_tracks,
-            get_raw_img
+            get_raw_img,
+            search
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

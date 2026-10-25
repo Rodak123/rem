@@ -1,6 +1,5 @@
 use crate::{
-    crawler::{building::build_track, checker::sync_tracks, collecting::collect_tracks},
-    db::DB,
+    crawler::{building::build_track, collecting::collect_tracks, report::CrawlReport},
     structs::audio::track::Track,
     utils::path::expand_tilde,
 };
@@ -9,36 +8,20 @@ use rayon::prelude::*;
 use std::{
     collections::HashMap,
     path::{Path, PathBuf},
-    sync::Arc,
     time::Instant,
 };
-use tokio::task::JoinHandle;
 
 pub mod building;
 pub mod checker;
 pub mod collecting;
+pub mod report;
 
-pub struct CrawlReport {
-    pub tracks: Vec<Track>,
-    pub failed: Vec<(PathBuf, anyhow::Error)>,
-}
-impl CrawlReport {
-    pub fn merge(&mut self, other: CrawlReport) {
-        self.tracks.extend(other.tracks);
-        self.failed.extend(other.failed);
-    }
-    pub fn empty() -> Self {
-        Self {
-            failed: vec![],
-            tracks: vec![],
-        }
-    }
-}
-
-/// Walks through the directory recursively,
+/// Blocking Walk through the directory recursively,
 /// takes metadata and later makes fingerprints
 /// Returned tracks are already sorted by title
-fn crawl<P: AsRef<Path>>(directory: P, known: &HashMap<PathBuf, Track>) -> Result<CrawlReport> {
+///
+/// This function doesn't handle duplicate fingerprints nor hashes
+pub fn crawl<P: AsRef<Path>>(directory: P, known: &HashMap<PathBuf, Track>) -> Result<CrawlReport> {
     let started = Instant::now();
     let root = expand_tilde(&directory.as_ref()).into_owned();
     let cpus = std::thread::available_parallelism()?.get();
@@ -56,11 +39,15 @@ fn crawl<P: AsRef<Path>>(directory: P, known: &HashMap<PathBuf, Track>) -> Resul
     });
 
     let mut tracks = Vec::with_capacity(results.len());
-    let mut failed = Vec::new();
+    let mut failed = HashMap::new();
     for r in results {
         match r {
-            Ok(t) => tracks.push(t),
-            Err(e) => failed.push(e),
+            Ok(t) => {
+                tracks.push(t);
+            }
+            Err((p, e)) => {
+                failed.insert(p, e);
+            }
         }
     }
     tracks.sort_unstable_by(|a, b| a.title.cmp(&b.title));
@@ -73,44 +60,4 @@ fn crawl<P: AsRef<Path>>(directory: P, known: &HashMap<PathBuf, Track>) -> Resul
         started.elapsed()
     );
     Ok(CrawlReport { tracks, failed })
-}
-/// Crawls through directories, fixes extra files and conflicts and
-/// insert into DB
-/// Rn the checker is really bad
-pub fn db_update(directories: Vec<PathBuf>, db: Arc<DB>) {
-    tauri::async_runtime::spawn(async move {
-        let now = Instant::now();
-        let known: Arc<HashMap<PathBuf, Track>> = match db.track_all().await {
-            Ok(v) => Arc::new(v.into_iter().map(|t| (t.path.clone(), t)).collect()),
-            Err(e) => {
-                eprintln!("db: loading known tracks failed: {e}");
-                Arc::default()
-            }
-        };
-
-        let mut tasks = Vec::with_capacity(directories.len());
-        for dir in directories {
-            let known = Arc::clone(&known);
-            let task: JoinHandle<Result<CrawlReport>> = tokio::task::spawn_blocking(move || {
-                let crawled = crawl(dir, &known)?;
-                for err in &crawled.failed {
-                    eprintln!("{} | {}", err.0.display(), err.1);
-                }
-                Ok(crawled)
-            });
-            tasks.push(task);
-        }
-
-        let mut report = CrawlReport::empty();
-        for task in tasks {
-            if let Ok(Ok(r)) = task.await {
-                report.merge(r);
-            }
-        }
-        if !report.tracks.is_empty() {
-            sync_tracks(report, Arc::clone(&known), Arc::clone(&db)).await?;
-        }
-        eprintln!("DB update ended after in {:.2?}", now.elapsed());
-        Ok::<(), anyhow::Error>(())
-    });
 }

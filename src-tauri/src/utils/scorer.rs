@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 use std::hash::Hash;
 
-/// TODO: Make it more fuzzy and just better. This will just
-/// take the value, which is most often
+/// Takes the value, which is most often
+/// TODO: Make it more fuzzy and just better.
 pub fn most_common<T: Hash + Eq + Clone>(values: impl IntoIterator<Item = T>) -> Option<T> {
     let mut counts: HashMap<T, usize> = HashMap::new();
     let mut order: Vec<T> = Vec::new();
