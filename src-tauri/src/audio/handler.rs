@@ -38,7 +38,7 @@ impl AudioHandler {
         let (tx, rx) = mpsc::channel::<AudioRequest>();
         let handler = Self {
             tx: Arc::new(tx),
-            realtime_info: Arc::new(Mutex::new(AudioRealTimeInfo::new())),
+            realtime_info: Arc::new(Mutex::new(AudioRealTimeInfo::default())),
             opts: Arc::new(Mutex::new(AudioOptions::new())),
         };
 

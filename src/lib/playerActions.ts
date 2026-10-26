@@ -7,6 +7,7 @@ export class PlayerState {
     public readonly muted: boolean = false;
     public readonly progress: number = 0;
     public readonly volume: number = 1;
+    public readonly search: boolean = false;
 
     // Because React won't see the different value, there must be
     // Cloning
@@ -26,6 +27,9 @@ export class PlayerState {
     public mute() { return this.clone({ muted: true }); }
     public unmute() { return this.clone({ muted: false }); }
     public toggleMute() { return this.clone({ muted: !this.muted }); }
+
+    public showSearch() { return this.clone({ search: true }); }
+    public hideSearch() { return this.clone({ search: false }); }
 
     public setVolume(volume: number) {
         return this.clone({ volume: Math.min(1, Math.max(0, volume)) });
@@ -53,6 +57,9 @@ export type PlayerActions = {
     toggleShuffle: () => void;
     pressShuffle: () => void;
     toggleMute: () => void;
+
+    showSearch: () => void;
+    hideSearch: () => void;
 
     setHome: () => void;
     setSong: () => void;

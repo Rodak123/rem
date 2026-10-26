@@ -1,12 +1,11 @@
-use anyhow::Result;
-use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
-
 use crate::{
     crawler::{CrawlReport, building::hash},
     db::DB,
     structs::audio::track::Track,
-    utils::scorer::new_tracks::most_common,
+    utils::scorer::most_common,
 };
+use anyhow::Result;
+use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use std::{collections::HashMap, path::PathBuf, sync::Arc, time::Instant};
 
 fn group_by_fingerprint(tracks: &[Track]) -> HashMap<u64, Vec<usize>> {
@@ -46,7 +45,7 @@ pub async fn sync_tracks(
         eprintln!("Have to insert/update");
         let now = Instant::now();
         // It's using upsert so you can just do this
-        db.track_insert_many(&changed).await?;
+        db.tracks().insert_many(&changed).await?;
         eprintln!("UPSERT into DB in {:.2?}", now.elapsed());
     } else {
         eprintln!("Nothing new");
@@ -90,7 +89,7 @@ pub async fn dedupe_found_tracks(tracks: &mut Vec<Track>, db: Arc<DB>) -> Result
         for hash_group in by_hash.values().filter(|g| g.len() > 1) {
             let mut in_db: Vec<usize> = Vec::new();
             for &i in hash_group {
-                if db.track_exists_by_path(&tracks[i].path).await? {
+                if db.tracks().exists(&tracks[i].path).await? {
                     in_db.push(i);
                 }
             }
@@ -140,12 +139,11 @@ pub async fn dedupe_found_tracks(tracks: &mut Vec<Track>, db: Arc<DB>) -> Result
         }
     }
 
-    for i in delete_from_db {
-        // Tbh it should be impossible to do so, because of the
-        // check. If it's the case this won't ever be ran.
-        // Just in case it's here
-        db.delete_track_by_path(&tracks[i].path).await?;
-    }
+    let paths_to_del: Vec<_> = delete_from_db
+        .iter()
+        .map(|idx| &tracks[*idx].path)
+        .collect();
+    db.tracks().delete_many_by_path(&paths_to_del).await?;
 
     let mut i = 0;
     tracks.retain(|_| {
@@ -161,7 +159,7 @@ pub async fn dedupe_found_tracks(tracks: &mut Vec<Track>, db: Arc<DB>) -> Result
 /// new solution with same fingerprint,
 /// hash, score,...
 async fn resolve_missing_tracks(
-    tracks: &mut Vec<Track>,
+    tracks: &mut [Track],
     known: Arc<HashMap<PathBuf, Track>>,
     db: Arc<DB>,
 ) -> Result<()> {
@@ -230,7 +228,7 @@ async fn resolve_missing_tracks(
         // with this track if you move it sync it and then return it back
         // but tbh it's really niche situation, which doesn't just happen
         // every day (I hope)
-        db.track_delete(old.1.0.id).await?;
+        db.tracks().delete(old.1.0.id).await?;
     }
     Ok(())
 }

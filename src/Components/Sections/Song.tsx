@@ -21,7 +21,7 @@ export const Song = () => {
     const { isMobile } = useResponsive();
 
     // Testing temporary data
-    const album = "Some Album";
+    const albumTitle = "Some Album";
     if (playerInfo.track !== null) {
         playerInfo.track!.author = ["Author 1", "Author 2"];
     }
@@ -40,29 +40,21 @@ export const Song = () => {
             </div>
             <div
                 {...vt("player-title", "Song")}
-                className="min-w-0 max-w-full flex flex-col justify-center"
+                className="min-w-0 w-full flex flex-col justify-center"
             >
                 <AutoScrolled
                     element={(
-                        <p
-                            {...vt("player-title", "Song")}
-                            className="text-3xl md:text-4xl lg:text-5xl text-center font-medium leading-tight"
-                        >
+                        <p className="text-3xl md:text-4xl lg:text-5xl text-center font-medium leading-tight">
                             {playingTitle}
                         </p>
                     )}
-                    animation='loop'
                     className="w-full"
                 />
-                {/* <span
-                    {...vt("player-title", "Song")}
-                    className="block min-w-0 w-full truncate text-3xl md:text-5xl lg:text-7xl font-medium leading-tight"
-                >
-                    {playerInfo.track?.title ?? "Nothing playing..."}
-                </span> */}
-                <span className="block min-w-0 w-full truncate text-center text-1xl md:text-2xl lg:text-3xl font-light leading-tight">
-                    {album}
-                </span>
+                {!noSongSelected && (
+                    <span className="block min-w-0 w-full truncate text-center text-1xl md:text-2xl lg:text-3xl font-light leading-tight">
+                        {albumTitle}
+                    </span>
+                )}
             </div>
             <div className="grow" />
             <div className="w-full flex flex-col items-stretch gap-2 px-5 lg:px-10">
@@ -83,19 +75,23 @@ export const Song = () => {
                     <div className="grow" />
                     <div>
                         <IconButton
+                            disabled={noSongSelected}
                             buttonSize='small'
-                            title={playerInfo.track?.if_favorite ? "Unfavorite" : "Favorite"}
-                            icon={playerInfo.track?.if_favorite ? IoIosHeart : IoIosHeartEmpty}
+                            title={playerInfo.track?.isFavorite ? "Unfavorite" : "Favorite"}
+                            icon={playerInfo.track?.isFavorite ? IoIosHeart : IoIosHeartEmpty}
                             iconSize={20}
                         />
                     </div>
                 </div>
                 <div
                     {...vt("progress-bar", "Song")}>
-                    <ProgressBar current={playerInfo.playerState.progress}
+                    <ProgressBar
+                        disabled={noSongSelected}
+                        current={playerInfo.playerState.progress}
                         duration={playerInfo.track?.duration ?? 0}
                         onSeek={playerInfo.actions.setSeek}
-                        className="stretch" />
+                        className="stretch"
+                    />
                 </div>
             </div>
             <div className="w-full flex">
@@ -104,6 +100,7 @@ export const Song = () => {
                 </div>
                 <div className="w-2/4 flex justify-center items-center gap-4">
                     <IconButton
+                        disabled={noSongSelected}
                         icon={MdOutlineSkipPrevious}
                         iconSize={40}
                     />
@@ -115,6 +112,7 @@ export const Song = () => {
                         {...vt("play-pause-btn", "Song")}
                     />
                     <IconButton
+                        disabled={noSongSelected}
                         icon={MdOutlineSkipNext}
                         iconSize={40}
                     />

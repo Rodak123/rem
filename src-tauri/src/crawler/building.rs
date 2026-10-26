@@ -1,55 +1,54 @@
-use std::{
-    collections::HashMap,
-    fs::File,
-    io::{Read, Seek, SeekFrom},
-    path::{Path, PathBuf},
-};
-
+use crate::{crawler::collecting::CollectedTracks, structs::audio::track::Track};
 use anyhow::Result;
 use lofty::{
     file::{AudioFile, TaggedFileExt},
     probe::Probe,
     tag::Accessor,
 };
+use std::{
+    collections::HashMap,
+    fs::File,
+    io::{Read, Seek, SeekFrom},
+    path::{Path, PathBuf},
+};
 use xxhash_rust::xxh3::Xxh3;
-
-use crate::{crawler::collecting::CollectedTracks, structs::audio::track::Track};
 
 pub fn build_track(c: &CollectedTracks, known: &HashMap<PathBuf, Track>) -> Result<Track> {
     let old = known.get(&c.path);
     let unchanged = old.filter(|o| o.mtime == c.mtime);
 
-    let tagged = Probe::open(&c.path)?.read()?;
-    let duration = tagged.properties().duration().as_secs();
-    let tag = tagged.primary_tag().or_else(|| tagged.first_tag());
+    Ok(if let Some(un_track) = unchanged {
+        un_track.clone()
+    } else {
+        let tagged = Probe::open(&c.path)?.read()?;
+        let duration = tagged.properties().duration().as_secs();
+        let tag = tagged.primary_tag().or_else(|| tagged.first_tag());
 
-    let title = tag
-        .and_then(|t| t.title())
-        .map(|t| fix_legacy_encoding(t.into_owned()))
-        .or_else(|| c.path.file_stem().map(|s| s.to_string_lossy().into_owned()))
-        .unwrap_or_default();
-    let comment = tag
-        .and_then(|t| t.comment())
-        .map(|t| fix_legacy_encoding(t.into_owned()))
-        .unwrap_or_default();
+        let title = tag
+            .and_then(|t| t.title())
+            .map(|t| fix_legacy_encoding(t.into_owned()))
+            .or_else(|| c.path.file_stem().map(|s| s.to_string_lossy().into_owned()))
+            .unwrap_or_default();
+        let comment = tag
+            .and_then(|t| t.comment())
+            .map(|t| fix_legacy_encoding(t.into_owned()))
+            .unwrap_or_default();
 
-    let (fp, hash) = match unchanged {
-        Some(o) => (o.fingerprint, o.hash),
-        None => (fingerprint(&c.path, c.size)?, None),
-    };
-    let (id, rating, is_favorite) = old.map_or((0, 0, false), |o| (o.id, o.rating, o.is_favorite));
-
-    Ok(Track {
-        id,
-        path: c.path.clone(),
-        mtime: c.mtime,
-        fingerprint: fp,
-        hash,
-        title,
-        rating,
-        comment,
-        duration,
-        is_favorite,
+        let fp = fingerprint(&c.path, c.size)?;
+        let hash = None;
+        let (id, rating, is_favorite) = (0, 0, false);
+        Track {
+            id,
+            path: c.path.clone(),
+            mtime: c.mtime,
+            fingerprint: fp,
+            hash,
+            title,
+            rating,
+            comment,
+            duration,
+            is_favorite,
+        }
     })
 }
 

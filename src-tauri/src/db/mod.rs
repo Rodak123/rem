@@ -1,3 +1,4 @@
+use crate::db::track::DBTracks;
 use anyhow::Result;
 use sqlx::{
     Pool, Sqlite,
@@ -11,8 +12,18 @@ pub struct DB {
 
 pub mod commands;
 pub mod track;
+pub mod updating;
 
 impl DB {
+    /// Returns dummy struct for tracks manipulation in DB
+    pub fn tracks(&self) -> DBTracks<'_> {
+        DBTracks { pool: &self.pool }
+    }
+
+    /// Initialize new SQLite DB with it's corresponding parents
+    ///
+    /// Initialize these tables:
+    ///     track
     pub async fn init(db_path: &Path) -> Result<Self> {
         if let Some(dir) = db_path.parent() {
             std::fs::create_dir_all(dir)?;
@@ -30,8 +41,10 @@ impl DB {
             .max_connections(4)
             .connect_with(opts)
             .await?;
+        let db = Self { pool };
+        db.tracks().init().await?;
 
         // sqlx::migrate!().run(&pool).await?;
-        Ok(Self { pool })
+        Ok(db)
     }
 }

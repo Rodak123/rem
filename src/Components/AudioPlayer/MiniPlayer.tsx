@@ -35,8 +35,7 @@ export const MiniPlayer = () => {
                     className="flex min-w-0 flex-1
                     cursor-pointer touch-none items-center gap-3 text-left"
                 >
-                    <div
-                        {...vt("player-vinyl", "Song")}>
+                    <div {...vt("player-vinyl", "Song")}>
                         <Vinyl progress={miniPlayerInfo.playerState.progress}
                             track={miniPlayerInfo.track}
                             spinning={miniPlayerInfo.playerState.playing}

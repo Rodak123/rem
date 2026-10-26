@@ -36,6 +36,7 @@
 @theme {
     --color-main: var(--color-main);
     --color-main-alt: var(--color-main-alt);
+    --color-muted: var(--muted);
     --animate-fly-in: fly-in 0.35s ease-out both;
 }
 
@@ -140,3 +141,7 @@ body {
 }
 
 @import "./album.css";
+
+:root {
+    view-transition-name: none;
+}
