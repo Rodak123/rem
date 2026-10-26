@@ -56,6 +56,12 @@ export const useActions = (
             };
             process();
         },
+        showSearch: () => {
+            setPlayerState(s => s.showSearch());
+        },
+        hideSearch: () => {
+            setPlayerState(s => s.hideSearch());
+        },
         pressShuffle: () => { /* This is going to be little longer
             cuz it requires also saving the state before shuffle*/ },
         setAlbumSection: (album: Album) => {
@@ -132,7 +138,15 @@ export const useActions = (
         " ": actions.togglePlay,
         o: actions.setSettings,
         "!": actions.setConflicts,
-        escape: actions.setPrevious,
+        escape: () => {
+            actions.setPrevious();
+            actions.hideSearch();
+        },
+        // Hopefully it will work
+        back: actions.setPrevious,
+        browserback: actions.setPrevious,
+        "/": actions.showSearch,
+        "mod+k": actions.showSearch,
     });
 
     return actions;

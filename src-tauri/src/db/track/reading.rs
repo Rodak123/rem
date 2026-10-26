@@ -2,7 +2,7 @@ use anyhow::Result;
 use std::path::Path;
 
 use crate::{
-    db::DB,
+    db::track::DBTracks,
     structs::audio::track::{Track, TrackRow},
 };
 
@@ -19,45 +19,47 @@ macro_rules! select_track {
 }
 
 /// These are only for selecting
-impl DB {
-    pub async fn track_get(&self, id: u64) -> Result<Option<Track>> {
+impl DBTracks<'_> {
+    /// Returns track based on the id
+    pub async fn get(&self, id: u64) -> Result<Option<Track>> {
         let row = sqlx::query_as::<_, TrackRow>(select_track!("WHERE id = ?"))
             .bind(id as i64)
-            .fetch_optional(&self.pool)
+            .fetch_optional(self.pool)
             .await?;
         Ok(row.map(Track::from))
     }
 
-    pub async fn track_get_by_path<P: AsRef<Path>>(&self, path: P) -> Result<Option<Track>> {
+    /// Returns track based on the path
+    pub async fn by_path<P: AsRef<Path>>(&self, path: P) -> Result<Option<Track>> {
         let path = path.as_ref().to_string_lossy();
         let row = sqlx::query_as::<_, TrackRow>(select_track!("WHERE path = ?"))
             .bind(path)
-            .fetch_optional(&self.pool)
+            .fetch_optional(self.pool)
             .await?;
         Ok(row.map(Track::from))
     }
 
     /// Sorted by title
-    pub async fn track_all(&self) -> Result<Vec<Track>> {
+    pub async fn all(&self) -> Result<Vec<Track>> {
         let rows =
             sqlx::query_as::<_, TrackRow>(select_track!("ORDER BY title COLLATE NOCASE, id"))
-                .fetch_all(&self.pool)
+                .fetch_all(self.pool)
                 .await?;
         Ok(rows.into_iter().map(Track::from).collect())
     }
 
     /// Returns all tracks, where favorite = 1
-    pub async fn track_favorites(&self) -> Result<Vec<Track>> {
+    pub async fn favorites(&self) -> Result<Vec<Track>> {
         let rows = sqlx::query_as::<_, TrackRow>(select_track!(
             "WHERE is_favorite = 1 ORDER BY title COLLATE NOCASE, id"
         ))
-        .fetch_all(&self.pool)
+        .fetch_all(self.pool)
         .await?;
         Ok(rows.into_iter().map(Track::from).collect())
     }
 
     /// Substring search over title and comment, case-insensitive for ASCII.
-    pub async fn track_search(&self, query: &str) -> Result<Vec<Track>> {
+    pub async fn search(&self, query: &str) -> Result<Vec<Track>> {
         let mut pattern = String::with_capacity(query.len() + 2);
         pattern.push('%');
         for c in query.chars() {
@@ -74,29 +76,17 @@ impl DB {
               ORDER BY title COLLATE NOCASE, id"
         ))
         .bind(pattern)
-        .fetch_all(&self.pool)
+        .fetch_all(self.pool)
         .await?;
         Ok(rows.into_iter().map(Track::from).collect())
     }
 
-    pub async fn track_exists_by_path<P: AsRef<Path>>(&self, path: P) -> Result<bool> {
-        let row: Option<(i64,)> = sqlx::query_as("SELECT id FROM track WHERE path = ? LIMIT 1")
+    /// Checks if DB has track with the specific path
+    pub async fn exists<P: AsRef<Path>>(&self, path: P) -> Result<bool> {
+        let exists: bool = sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM track WHERE path = ?)")
             .bind(path.as_ref().to_string_lossy())
-            .fetch_optional(&self.pool)
+            .fetch_one(self.pool)
             .await?;
-        Ok(row.is_some())
-    }
-
-    pub async fn get_path_by_hash_of_fingerprint(
-        &self,
-        fingerprint: u64,
-        hash: Option<u64>,
-    ) -> Result<Option<Track>> {
-        let row = sqlx::query_as::<_, TrackRow>(select_track!("WHERE fingerprint = ? OR hash = ?"))
-            .bind(fingerprint as i64)
-            .bind(hash.and_then(|h| Some(h as i64)))
-            .fetch_optional(&self.pool)
-            .await?;
-        Ok(row.map(Track::from))
+        Ok(exists)
     }
 }

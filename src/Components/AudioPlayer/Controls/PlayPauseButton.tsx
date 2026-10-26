@@ -20,8 +20,7 @@ export const PlayPauseButton: React.FC<PlayPauseButtonProps> = ({ isPlaying, siz
                 "grid size-11 shrink-0 place-items-center rounded-full border",
                 "border-foreground/40 transition-colors",
                 "disabled:opacity-50 hover:bg-hover-bg",
-                "hover:bg-foreground/10",
-                disabled ? "cursor-not-allowed" : "cursor-pointer",
+                disabled ? "cursor-not-allowed" : "cursor-pointer hover:bg-foreground/10",
                 size === 'normal' ? 'size-11' : 'size-15',
                 className
             )}

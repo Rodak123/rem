@@ -1,15 +1,7 @@
 import { useEffect, useState } from 'react';
-import { BackendResponse, Track } from '../../lib/types';
+import { Track } from '../../lib/types';
 import { invoke } from '@tauri-apps/api/core';
-
-interface RawTrack {
-    id: string;
-    title: string;
-    comment: string | null;
-    duration: number;
-    is_favorite: boolean;
-    path: string;
-}
+import { BackendResponse, RawTrack } from '../../lib/types/middleware';
 
 interface AllTracks {
     tracks: Track[];
@@ -26,7 +18,6 @@ export const useAllTracks = () => {
             const rawTracks = await invoke("get_all_tracks") as RawTrack[];
 
             const tracks = rawTracks
-                .slice(0, 10)
                 .map((rawTrack): Track => ({
                     id: rawTrack.id,
                     title: rawTrack.title,

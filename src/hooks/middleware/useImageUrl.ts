@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { BackendResponse } from '../../lib/types';
 import { invoke } from '@tauri-apps/api/core';
+import { BackendResponse } from '../../lib/types/middleware';
 
 interface TrackCover {
     imageUrl?: string;

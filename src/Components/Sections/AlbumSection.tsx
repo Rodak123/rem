@@ -7,6 +7,7 @@ import { AlbumPreview } from '../General/AlbumPreview';
 import { CreatorLink } from '../General/ArtistLink';
 import { SongList } from '../General/SongList';
 import { useAllTracks } from '../../hooks/middleware';
+import { Loader } from '../General/Loader';
 
 interface AlbumSectionProps {
     album: Album;
@@ -32,6 +33,14 @@ export const AlbumSection: React.FC<AlbumSectionProps> = ({ album }) => {
         }));
 
     const totalDurationSeconds = !tracks ? 0 : tracks.reduce((total, { duration }) => total + duration, 0);
+
+    const handlePlayTrack = (index: number) => {
+        if (status !== 'ready') return;
+
+        // Replaced with actual logic
+        console.log(`Play album id:${album.id} from song id:${tracks[index].id}`);
+        playerInfo.actions.loadSong(tracks[index].path, true);
+    };
 
     return (
         <div className="bg-background p-3 flex justify-between max-md:flex-col md:flex-row gap-4 relative">
@@ -90,37 +99,37 @@ export const AlbumSection: React.FC<AlbumSectionProps> = ({ album }) => {
                 </div>
                 <p className="text-md pb-2">Short description about the album :P</p>
             </div>
-            {status === 'ready'
-                ? (
-                    <SongList
-                        isReorderable
-                        songs={tracks}
-                        onSongClicked={(idx) => {
-                            // Replaced with actual logic
-                            console.log(`Play album id:${album.id} from song id:${tracks[idx].id}`);
-                            playerInfo.actions.loadSong(tracks[idx].path, true);
-                        }}
-                        menuOptions={[
-                            {
-                                name: 'Add to...',
-                                icon: MdPlaylistAdd,
-                                onClick: (index: number) => {
-                                    console.log(`Add song ${tracks[index]} to...`);
-                                    console.error('Not implemented yet >:O');
-                                }
-                            },
-                        ]}
-                        className="w-full md:max-w-1/2 pb-31.25 z-5"
-                    /**
-                     * 125px is based on the MiniPlayer height and some spacing,
-                     * I'm not sure how to have this dynamic
-                     */
-                    />
-                )
-                : (
-                    <p>{error?.message ?? '...'}</p>
-                )
-            }
+
+            {status === 'ready' && (
+                <SongList
+                    isReorderable
+                    songs={tracks}
+                    onSongClicked={handlePlayTrack}
+                    menuOptions={[
+                        {
+                            name: 'Add to...',
+                            icon: MdPlaylistAdd,
+                            onClick: (index: number) => {
+                                console.log(`Add song ${tracks[index]} to...`);
+                                console.error('Not implemented yet >:O');
+                            }
+                        },
+                    ]}
+                    className="w-full md:max-w-1/2 pb-31.25 z-5"
+                /**
+                 * 125px is based on the MiniPlayer height and some spacing,
+                 * I'm not sure how to have this dynamic
+                 */
+                />
+            )}
+
+            {status === 'waiting' && (
+                <Loader />
+            )}
+
+            {status === 'failed' && (
+                <p>Error: {error.message}</p>
+            )}
         </div>
     );
 };

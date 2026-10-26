@@ -50,12 +50,6 @@ export const Song = () => {
                     )}
                     className="w-full"
                 />
-                {/* <span
-                    {...vt("player-title", "Song")}
-                    className="block min-w-0 w-full truncate text-3xl md:text-5xl lg:text-7xl font-medium leading-tight"
-                >
-                    {playerInfo.track?.title ?? "Nothing playing..."}
-                </span> */}
                 {!noSongSelected && (
                     <span className="block min-w-0 w-full truncate text-center text-1xl md:text-2xl lg:text-3xl font-light leading-tight">
                         {albumTitle}
