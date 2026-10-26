@@ -1,16 +1,17 @@
-import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useRef, useState } from "react";
 import { IoSearch } from "react-icons/io5";
-import { Track } from "../../lib/types";
 import { usePlayerInfo } from "../../hooks";
+import { useSearch } from '../../hooks/middleware';
+import { cn } from '../../lib/utils';
+
+interface Result {
+    text: string;
+    desc: string;
+    path: string;
+}
 
 export const Search = ({ searchInMiddle = true }: { searchInMiddle?: boolean; }) => {
-    const [results, setResults] = useState<{
-        text: string;
-        desc: string;
-        action: () => void;
-        path: string
-    }[]>([]);
+    const [results, setResults] = useState<Result[]>([]);
     const MIN_CH = 18;
     const MAX_CH = 40;
     const [showInput, setShowInput] = useState(false);
@@ -19,31 +20,31 @@ export const Search = ({ searchInMiddle = true }: { searchInMiddle?: boolean; })
     const chars = Math.min(Math.max(value.length, MIN_CH), MAX_CH);
     const playerInfo = usePlayerInfo();
 
+    const { status, tracks } = useSearch({ query: value });
+
+    const handlePlayTrack = (path: string) => {
+        console.log("trying to play");
+        playerInfo.actions.loadSong(path, true);
+    };
+
     useEffect(() => {
-        const searching = async () => {
-            const tracks: Track[] = await invoke("search", { query: value });
-            const mappedTracks = tracks.map((track) => {
-                return {
-                    text: track.title,
-                    desc: track.comment,
-                    action: () => {
-                        console.log("trying to play");
-                        playerInfo.actions.loadSong(track.path, true);
-                    },
-                    path: track.path
-                }
-            });
-            setResults(mappedTracks);
-        }
-        searching();
-    }, [value]);
+        if (status !== 'ready') return;
+        const newResults = tracks
+            .map((track): Result => ({
+                text: track.title,
+                path: track.path,
+                desc: track.comment ?? ''
+            }));
+
+        setResults(newResults);
+    }, [status, tracks]);
 
     useEffect(() => {
         if (playerInfo.playerState.search !== showInput) {
             setShowInput(playerInfo.playerState.search);
             inputRef.current?.focus();
         }
-    }, [playerInfo.playerState])
+    }, [playerInfo.playerState]);
 
     return (
         <div className="flex items-center">
@@ -71,7 +72,7 @@ export const Search = ({ searchInMiddle = true }: { searchInMiddle?: boolean; })
                 onChange={(e) => setValue(e.target.value)}
                 onBlur={() => {
                     playerInfo.actions.hideSearch();
-                    setShowInput(false)
+                    setShowInput(false);
                 }}
                 onKeyDown={(e) => {
                     if (e.key === "Escape") {
@@ -87,15 +88,19 @@ export const Search = ({ searchInMiddle = true }: { searchInMiddle?: boolean; })
             {/*
                 I mean it will look weird, when the Search Icon is on left,
                 but I want to go to eat my dinner :(
+
+                ig we can delete the middle option, since it will be always in the middle 
             */}
-            <ul className={`fixed sm:max-h-106 overflow-y-auto
-                z-50 left-1/2 -translate-x-1/2
-            ${!searchInMiddle ? "sm:left-0 sm:translate-x-0" : ""}
-            sm:top-15 top-14 min-w-full
-            sm:min-w-120 overflow-hidden sm:rounded-2xl
-            rounded-b-2xl max-h-191
-            bg-background-dark border border-foreground/20
-            ${!showInput ? "hidden" : ""}`}
+            <ul className={cn(
+                'fixed sm:max-h-106 overflow-y-auto',
+                'z-50 left-1/2 -translate-x-1/2',
+                !searchInMiddle && 'sm:left-0 sm:translate-x-0',
+                'sm:top-15 top-14 min-w-full',
+                'sm:min-w-120 overflow-hidden sm:rounded-2xl',
+                'rounded-b-2xl max-h-191',
+                'bg-background-dark border border-foreground/20',
+                !showInput && 'hidden',
+            )}
                 onMouseDown={(e) => e.preventDefault()}>
                 {results.map((result, i) => (
                     <li
@@ -103,7 +108,7 @@ export const Search = ({ searchInMiddle = true }: { searchInMiddle?: boolean; })
                         style={{ animationDelay: `${i * 50}ms` }}
                         className="animate-fly-in border-b-foreground/30 not-last:border-b hover:bg-background"
                     >
-                        <button onClick={result.action} className="w-full
+                        <button onClick={() => handlePlayTrack(result.path)} className="w-full
                         pl-6 pt-5 pb-3
                         h-full text-left cursor-pointer">
                             <h4 className="text-xl">{result.text}</h4>
