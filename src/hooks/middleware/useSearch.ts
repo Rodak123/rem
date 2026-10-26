@@ -12,7 +12,7 @@ interface SearchArgs {
 }
 
 /**
- * Fetches all tracks from the backend.
+ * Fetches tracks from the backend using a query.
  */
 export const useSearch = ({ query }: SearchArgs) => {
     const [response, setResponse] = useState<BackendResponse<SearchedTracks>>(() => ({ status: 'waiting' }));
