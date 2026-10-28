@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# This script checks whether all configs which
+# contain a version share the same environment VERSION value
+
+SUCCESS=true
+
+# Looks for the target version in Cargo.toml
+if ! grep -q "version = \"$VERSION\"" src-tauri/Cargo.toml; then
+    echo "version does not match Cargo.toml" >&2
+    SUCCESS=false
+fi
+
+# Looks for the target version in package.json
+if ! grep -q "\"version\": \"$VERSION\"," package.json; then
+    echo "version does not match package.json" >&2
+    SUCCESS=false
+fi
+
+# Looks for the target version in tauri.conf.json
+if ! grep -q "\"version\": \"$VERSION\"," src-tauri/tauri.conf.json; then
+    echo "version does not match tauri.conf.json" >&2
+    SUCCESS=false
+fi
+
+if [ "$SUCCESS" = false ]; then
+    exit 1
+fi
